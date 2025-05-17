@@ -13,39 +13,43 @@ import (
 )
 
 func init() {
-	config.DB = config.MongoConnect(config.DBName)
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		log.Fatalf("Error loading .env file: %v", err)
 	}
+
+	config.DB = config.MongoConnect(config.DBName)
 }
 
 func main() {
 	app := fiber.New()
 
-app.Use(cors.New(cors.Config{
-	AllowOrigins:     strings.Join(config.GetAllowedOrigins(), ","),
-	AllowMethods:     "GET,POST,PUT,DELETE",
-	AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
-	AllowCredentials: true,
-}))
+	// CORS setup
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     strings.Join(config.GetAllowedOrigins(), ","),
+		AllowMethods:     "GET,POST,PUT,DELETE",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowCredentials: true,
+	}))
 
-router.SetupRoutes(app)
+	// Setup routes
+	router.SetupRoutes(app)
 
-app.Use(func(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-		"status":  fiber.StatusNotFound,
-		"message": "Endpoint not found",
+	// Fallback route for 404
+	app.Use(func(c *fiber.Ctx) error {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"status":  fiber.StatusNotFound,
+			"message": "Endpoint not found",
+		})
 	})
-})
 
-port := os.Getenv("PORT")
-if port == "" {
-	port = "8080"
-}
-log.Printf("Server running on port %s", port)
-if err := app.Listen(":" + port); err != nil {
-	log.Fatalf("Failed to start server: %v", err)
-}
-
+	// Ambil port dari .env, default ke 8080
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Printf("Server running on port %s", port)
+	if err := app.Listen(":" + port); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }

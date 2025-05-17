@@ -16,7 +16,9 @@ var DBName = "mpls14"
 var DB *mongo.Database
 
 func MongoConnect(dbname string) (db *mongo.Database) {
-    clientOpts := options.Client().ApplyURI(MongoString)
+    mongoString := os.Getenv("MONGOS") // ambil setelah .env diload
+
+    clientOpts := options.Client().ApplyURI(mongoString)
 
     client, err := mongo.Connect(context.TODO(), clientOpts)
     if err != nil {
@@ -24,7 +26,6 @@ func MongoConnect(dbname string) (db *mongo.Database) {
         return nil
     }
 
-    // Ping untuk pastikan koneksi sukses
     if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
         fmt.Println("MongoConnect: ping failed:", err)
         return nil

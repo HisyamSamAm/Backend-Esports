@@ -10,7 +10,7 @@ import (
 )
 
 func GetAllTeams(ctx context.Context) ([]model.Team, error) {
-	collection := config.DB.Collection("teams")
+	collection := config.DB.Collection("team")
 	filter := bson.M{}
 
 	cursor, err:= collection.Find(ctx, filter)
