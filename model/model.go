@@ -14,13 +14,20 @@ type Team struct {
 }
 
 type Player struct {
-	ID         primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Name       string             `bson:"name" json:"name"`
-	InGameName string             `bson:"in_game_name" json:"in_game_name"`
-	Role       string             `bson:"role" json:"role"`
-	TeamID     primitive.ObjectID `bson:"team_id" json:"team_id"`
+	ID         string `bson:"id" json:"id"` // pakai "id", bukan "_id"
+	Name       string `bson:"name" json:"name"`
+	InGameName string `bson:"in_game_name" json:"in_game_name"`
+	Role       string `bson:"role" json:"role"`
+	TeamID     string `bson:"team_id" json:"team_id"` // juga pakai string
 }
 
+
+type PlayerInput struct {
+	Name       string `json:"name"`
+	InGameName string `json:"in_game_name"`
+	Role       string `json:"role"`
+	TeamID     string `json:"team_id"` // string dulu, nanti konversi
+}
 type Tournament struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	Name        string             `bson:"name" json:"name"`

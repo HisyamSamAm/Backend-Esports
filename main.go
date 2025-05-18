@@ -9,6 +9,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 )
 
@@ -24,6 +25,7 @@ func init() {
 func main() {
 	app := fiber.New()
 
+	app.Use(logger.New())
 	// CORS setup
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     strings.Join(config.GetAllowedOrigins(), ","),
