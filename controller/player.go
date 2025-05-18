@@ -55,7 +55,7 @@ func CreatePlayer(ctx context.Context, player model.Player) error {
 }
 
 func UpdatePlayer(ctx context.Context, id string, updatedData model.Player) error {
-	collection := config.DB.Collection("players")
+	collection := config.DB.Collection("player")
 
 	filter := bson.M{"id": id}
 
