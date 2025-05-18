@@ -1,8 +1,6 @@
 package model
 
 import (
-	"time"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -40,11 +38,11 @@ type Tournament struct {
 
 
 type Score struct {
-    ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-    TournamentID primitive.ObjectID `bson:"tournament_id" json:"tournament_id"`
-    Team1ID      primitive.ObjectID `bson:"team1_id" json:"team1_id"`
-    Team2ID      primitive.ObjectID `bson:"team2_id" json:"team2_id"`
-    Team1Score   int                `bson:"team1_score" json:"team1_score"`
-    Team2Score   int                `bson:"team2_score" json:"team2_score"`
-    Date         time.Time          `bson:"date" json:"date"`
+	ID           string `bson:"id" json:"id"`                         // "match-1"
+	TournamentID string `bson:"tournament_id" json:"tournament_id"`   // "mpl-id-s14"
+	Team1ID      string `bson:"team1_id" json:"team1_id"`             // "team-fnoc"
+	Team2ID      string `bson:"team2_id" json:"team2_id"`             // "team-tlid"
+	Team1Score   int    `bson:"team1_score" json:"team1_score"`
+	Team2Score   int    `bson:"team2_score" json:"team2_score"`
+	Date         string `bson:"date" json:"date"`                     // karena di Mongo bentuknya string "2024-08-09"
 }

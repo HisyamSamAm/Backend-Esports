@@ -29,4 +29,11 @@ func SetupRoutes(app *fiber.App) {
 	app.Post("/api/tournament", handler.CreateTournament)
 	app.Put("/api/tournament/:id", handler.UpdateTournament)
 	app.Delete("/api/tournament/:id", handler.DeleteTournament)
+
+	//endpoint score match
+	api.Get("/score-match", handler.GetAllScoreMatches)
+	api.Get("/score-match/:id", handler.GetScoreMatchByID)
+	app.Post("/api/score-match", handler.CreateScoreMatch)
+	app.Put("/api/score-match/:id", handler.UpdateScoreMatch)
+	app.Delete("/api/score-match/:id", handler.DeleteScoreMatch)
 }
