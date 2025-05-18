@@ -29,13 +29,15 @@ type PlayerInput struct {
 	TeamID     string `json:"team_id"` // string dulu, nanti konversi
 }
 type Tournament struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Name        string             `bson:"name" json:"name"`
-	Season      string             `bson:"season" json:"season"`
-	StartDate   string             `bson:"start_date" json:"start_date"`
-	EndDate     string             `bson:"end_date" json:"end_date"`
-	Description string             `bson:"description" json:"description"`
+	ObjectID   primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	ID         string             `bson:"id" json:"id"` // Custom string ID seperti "mpl-id-s14"
+	Name       string             `bson:"name" json:"name"`
+	Location   string             `bson:"location" json:"location"`
+	StartDate  string             `bson:"start_date" json:"start_date"`
+	EndDate    string             `bson:"end_date" json:"end_date"`
+	Teams      []string           `bson:"teams" json:"teams"`
 }
+
 
 type Score struct {
     ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
