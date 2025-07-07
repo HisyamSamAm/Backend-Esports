@@ -3,11 +3,12 @@ package config
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 var MongoString string = os.Getenv("MONGOS")
@@ -15,22 +16,25 @@ var DBName = "mpls14"
 
 var DB *mongo.Database
 
-func MongoConnect(dbname string) (db *mongo.Database) {
-    mongoString := os.Getenv("MONGOS") // ambil setelah .env diload
+func ConnectDB() {
+	mongoString := os.Getenv("MONGOS")
+	if mongoString == "" {
+		log.Fatal("Error connecting to MongoDB, dimana envnya!")
+	}
 
-    clientOpts := options.Client().ApplyURI(mongoString)
+	clientOpts := options.Client().ApplyURI(mongoString).
+	SetServerSelectionTimeout(5 * time.Second)
 
-    client, err := mongo.Connect(context.TODO(), clientOpts)
-    if err != nil {
-        fmt.Println("MongoConnect: failed to connect:", err)
-        return nil
-    }
+	client, err := mongo.Connect(context.TODO(), clientOpts)
+	if err != nil {
+		log.Fatal("Error connecting to MongoDB:", err)
+	}
 
-    if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
-        fmt.Println("MongoConnect: ping failed:", err)
-        return nil
-    }
+	if err := client.Ping(context.TODO(), nil); err != nil {
+		log.Fatal("Error pinging MongoDB:", err)
+	}
 
-    fmt.Println("MongoConnect: connected to MongoDB Atlas")
-    return client.Database(dbname)
+	DB = client.Database(DBName)
+	fmt.Println("Asikk connect nichh!")
+
 }

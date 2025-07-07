@@ -16,7 +16,7 @@ import (
 func init() {
 	_ = godotenv.Load() 
 
-	config.MongoConnect(config.DBName)
+	config.ConnectDB() // Initialize MongoDB connection
 }
 
 func main() {
