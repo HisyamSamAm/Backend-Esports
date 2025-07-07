@@ -14,12 +14,9 @@ import (
 )
 
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
+	_ = godotenv.Load() 
 
-	config.DB = config.MongoConnect(config.DBName)
+	config.MongoConnect(config.DBName)
 }
 
 func main() {
