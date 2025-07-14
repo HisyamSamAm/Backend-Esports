@@ -26,9 +26,6 @@ func Login(c *fiber.Ctx) error {
 	if !pwd.CheckPasswordHash(req.Password, user.Password) {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Wrong password"})
 	}
-<<<<<<< HEAD
-}
-=======
 
 	// Generate token PASETO
 	token, err := middleware.EncodeWithRoleHours(user.Role, user.Username, 2)
@@ -42,4 +39,3 @@ func Login(c *fiber.Ctx) error {
 		"token":   token,
 	})
 }
->>>>>>> 4d86ebc93116bd04a770e6a9be3c2754399fe534

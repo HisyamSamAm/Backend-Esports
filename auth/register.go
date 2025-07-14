@@ -52,7 +52,3 @@ func Register(c *fiber.Ctx) error {
 		"id":      id,
 	})
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 4d86ebc93116bd04a770e6a9be3c2754399fe534
