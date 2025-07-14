@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"EMBECK/controller"
+	repo "EMBECK/repository"
 	"EMBECK/model"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAllPlayers(c *fiber.Ctx) error {
-	players, err := controller.GetAllPlayers(c.Context())
+	players, err := repo.GetAllPlayers(c.Context())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Gagal ambil data players!",
@@ -25,7 +25,7 @@ func GetAllPlayers(c *fiber.Ctx) error {
 func GetPlayerByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	player, err := controller.GetPlayerByID(c.Context(), id)
+	player, err := repo.GetPlayerByID(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"message": "Player tidak ditemukan!",
@@ -47,7 +47,7 @@ func CreatePlayer(c *fiber.Ctx) error {
 		})
 	}
 
-	err := controller.CreatePlayer(c.Context(), player)
+	err := repo.CreatePlayer(c.Context(), player)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Gagal simpan player!",
@@ -75,7 +75,7 @@ func UpdatePlayer(c *fiber.Ctx) error {
 	// Pastikan ID tidak berubah ke kosong/null
 	updatedPlayer.ID = id
 
-	err := controller.UpdatePlayer(c.Context(), id, updatedPlayer)
+	err := repo.UpdatePlayer(c.Context(), id, updatedPlayer)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Gagal update player!",
@@ -93,7 +93,7 @@ func UpdatePlayer(c *fiber.Ctx) error {
 func DeletePlayer(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	err := controller.DeletePlayer(c.Context(), id)
+	err := repo.DeletePlayer(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Gagal hapus player!",

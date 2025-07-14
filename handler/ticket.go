@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"EMBECK/controller"
+	repo "EMBECK/repository"
 	"EMBECK/model"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAllTickets(c *fiber.Ctx) error {
-	tickets, err := controller.GetAllTickets(c.Context())
+	tickets, err := repo.GetAllTickets(c.Context())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -24,7 +24,7 @@ func GetAllTickets(c *fiber.Ctx) error {
 }
 func GetTicketByID(c *fiber.Ctx) error {
 	id := c.Params("id")
-	ticket, err := controller.GetTicketByID(c.Context(), id)
+	ticket, err := repo.GetTicketByID(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -48,7 +48,7 @@ func CreateTicket(c *fiber.Ctx) error {
 			"data":    nil,
 		})
 	}
-	err := controller.CreateTicket(c.Context(), ticket)
+	err := repo.CreateTicket(c.Context(), ticket)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -72,7 +72,7 @@ func UpdateTicket(c *fiber.Ctx) error {
 			"data":    nil,
 		})
 	}
-	err := controller.UpdateTicket(c.Context(), id, ticket)
+	err := repo.UpdateTicket(c.Context(), id, ticket)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -88,7 +88,7 @@ func UpdateTicket(c *fiber.Ctx) error {
 
 func DeleteTicket(c *fiber.Ctx) error {
 	id := c.Params("id")
-	err := controller.DeleteTicket(c.Context(), id)
+	err := repo.DeleteTicket(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,

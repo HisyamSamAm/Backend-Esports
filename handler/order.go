@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"EMBECK/controller"
 	"EMBECK/model"
+	repo "EMBECK/repository"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAllOrders(c *fiber.Ctx) error {
-	orders, err := controller.GetAllOrders(c.Context())
+	orders, err := repo.GetAllOrders(c.Context())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -26,7 +26,7 @@ func GetAllOrders(c *fiber.Ctx) error {
 func GetOrderByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	order, err := controller.GetOrderByID(c.Context(), id)
+	order, err := repo.GetOrderByID(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"status":  fiber.StatusNotFound,
@@ -53,7 +53,7 @@ func CreateOrder(c *fiber.Ctx) error {
 		})
 	}
 
-	err := controller.CreateOrder(c.Context(), order)
+	err := repo.CreateOrder(c.Context(), order)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -79,7 +79,7 @@ func UpdateOrder(c *fiber.Ctx) error {
 		})
 	}
 
-	err := controller.UpdateOrder(c.Context(), id, order)
+	err := repo.UpdateOrder(c.Context(), id, order)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -96,7 +96,7 @@ func UpdateOrder(c *fiber.Ctx) error {
 func DeleteOrder(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	err := controller.DeleteOrder(c.Context(), id)
+	err := repo.DeleteOrder(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,

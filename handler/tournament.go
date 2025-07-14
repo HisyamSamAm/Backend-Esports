@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"EMBECK/controller"
+	repo "EMBECK/repository"
 	"EMBECK/model"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAllTournaments(c *fiber.Ctx) error {
-	tournaments, err := controller.GetAllTournaments(c.Context())
+	tournaments, err := repo.GetAllTournaments(c.Context())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -26,7 +26,7 @@ func GetAllTournaments(c *fiber.Ctx) error {
 func GetTournamentByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	tournament, err := controller.GetTournamentByID(c.Context(), id)
+	tournament, err := repo.GetTournamentByID(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"status":  fiber.StatusNotFound,
@@ -53,7 +53,7 @@ func CreateTournament(c *fiber.Ctx) error {
 		})
 	}
 
-	err := controller.CreateTournament(c.Context(), tournament)
+	err := repo.CreateTournament(c.Context(), tournament)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -80,7 +80,7 @@ func UpdateTournament(c *fiber.Ctx) error {
 		})
 	}
 
-	err := controller.UpdateTournament(c.Context(), id, updatedData)
+	err := repo.UpdateTournament(c.Context(), id, updatedData)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -98,7 +98,7 @@ func UpdateTournament(c *fiber.Ctx) error {
 func DeleteTournament(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	err := controller.DeleteTournament(c.Context(), id)
+	err := repo.DeleteTournament(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,

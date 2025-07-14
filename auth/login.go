@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"EMBECK/controller"
 	"EMBECK/model"
+	usr "EMBECK/repository"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -19,7 +19,7 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// Authenticate user against database or auth system
-	dbUser, err := controller.AuthenticateUser(c.Context(), user.Username, user.Password)
+	dbUser, err := usr.AuthenticateUser(c.Context(), user.Username, user.Password)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"status":  fiber.StatusUnauthorized,

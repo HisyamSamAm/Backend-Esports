@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"EMBECK/controller"
+	repo "EMBECK/repository"
 	"EMBECK/model"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAllTeams(c *fiber.Ctx) error {
-	team, err := controller.GetAllTeams(c.Context())
+	team, err := repo.GetAllTeams(c.Context())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status": fiber.StatusInternalServerError,
@@ -26,7 +26,7 @@ func GetAllTeams(c *fiber.Ctx) error {
 func GetTeamByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	team, err := controller.GetTeamByID(c.Context(), id)
+	team, err := repo.GetTeamByID(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"status":  fiber.StatusNotFound,
@@ -53,7 +53,7 @@ func CreateTeam(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := controller.CreateTeam(c.Context(), team)
+	id, err := repo.CreateTeam(c.Context(), team)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -81,7 +81,7 @@ func UpdateTeam(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := controller.UpdateTeam(c.Context(), id, team); err != nil {
+	if err := repo.UpdateTeam(c.Context(), id, team); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
 			"message": "Gagal update team bre!",
@@ -98,7 +98,7 @@ func UpdateTeam(c *fiber.Ctx) error {
 func DeleteTeam(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	if err := controller.DeleteTeam(c.Context(), id); err != nil {
+	if err := repo.DeleteTeam(c.Context(), id); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
 			"message": "Gagal hapus team bre!",

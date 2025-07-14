@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"EMBECK/controller"
+	repo "EMBECK/repository"
 	"EMBECK/model"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAllScoreMatches(c *fiber.Ctx) error {
-	scoreMatches, err := controller.GetAllScoreMatches(c.Context())
+	scoreMatches, err := repo.GetAllScoreMatches(c.Context())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -26,7 +26,7 @@ func GetAllScoreMatches(c *fiber.Ctx) error {
 func GetScoreMatchByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	scoreMatch, err := controller.GetAllScoreMatchesByID(c.Context(), id)
+	scoreMatch, err := repo.GetAllScoreMatchesByID(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"status":  fiber.StatusNotFound,
@@ -53,7 +53,7 @@ func CreateScoreMatch(c *fiber.Ctx) error {
 		})
 	}
 
-	err := controller.CreateScoreMatch(c.Context(), scoreMatch)
+	err := repo.CreateScoreMatch(c.Context(), scoreMatch)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -79,7 +79,7 @@ func UpdateScoreMatch(c *fiber.Ctx) error {
 		})
 	}
 
-	err := controller.UpdateScoreMatch(c.Context(), id, updatedData)
+	err := repo.UpdateScoreMatch(c.Context(), id, updatedData)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -97,7 +97,7 @@ func UpdateScoreMatch(c *fiber.Ctx) error {
 func DeleteScoreMatch(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	err := controller.DeleteScoreMatch(c.Context(), id)
+	err := repo.DeleteScoreMatch(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,

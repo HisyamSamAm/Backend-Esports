@@ -2,14 +2,14 @@ package handler
 
 import (
 	"EMBECK/auth"
-	"EMBECK/controller"
 	"EMBECK/model"
+	repo "EMBECK/repository"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAllUsers(c *fiber.Ctx) error {
-	users, err := controller.GetAllUsers(c.Context())
+	users, err := repo.GetAllUsers(c.Context())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -27,7 +27,7 @@ func GetAllUsers(c *fiber.Ctx) error {
 func GetUserByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	user, err := controller.GetUserByID(c.Context(), id)
+	user, err := repo.GetUserByID(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"status":  fiber.StatusNotFound,
@@ -53,7 +53,7 @@ func CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	err := controller.CreateUser(c.Context(), user)
+	err := repo.CreateUser(c.Context(), user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -81,7 +81,7 @@ func UpdateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	err := controller.UpdateUser(c.Context(), id, updatedData)
+	err := repo.UpdateUser(c.Context(), id, updatedData)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
@@ -98,7 +98,7 @@ func UpdateUser(c *fiber.Ctx) error {
 func DeleteUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	err := controller.DeleteUser(c.Context(), id)
+	err := repo.DeleteUser(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,

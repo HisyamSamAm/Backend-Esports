@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"EMBECK/controller"
 	"EMBECK/model"
+	crt "EMBECK/repository"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -26,7 +26,7 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	err := controller.CreateUser(c.Context(), user)
+	err := crt.CreateUser(c.Context(), user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  fiber.StatusInternalServerError,
