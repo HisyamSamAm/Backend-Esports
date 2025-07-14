@@ -1,0 +1,510 @@
+basePath: /api
+definitions:
+  model.APIResponse:
+    properties:
+      data: {}
+      message:
+        example: Success message
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  model.ErrorResponse:
+    properties:
+      data: {}
+      message:
+        example: Error message
+        type: string
+      status:
+        example: 400
+        type: integer
+    type: object
+  model.LoginRequest:
+    properties:
+      password:
+        example: password123
+        type: string
+      username:
+        example: john_doe
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  model.LoginResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.User'
+      message:
+        example: Berhasil login sebagai user
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  model.Player:
+    properties:
+      id:
+        example: player-001
+        type: string
+      in_game_name:
+        example: JohnMLBB
+        type: string
+      name:
+        example: John Doe
+        type: string
+      role:
+        example: Tank
+        type: string
+      team_id:
+        example: team-fnoc
+        type: string
+    type: object
+  model.PlayerResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.Player'
+      message:
+        example: Berhasil ambil player!
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  model.PlayersResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.Player'
+        type: array
+      message:
+        example: Berhasil ambil data players!
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  model.RegisterRequest:
+    properties:
+      email:
+        example: john@example.com
+        type: string
+      password:
+        example: password123
+        type: string
+      role:
+        example: user
+        type: string
+      username:
+        example: john_doe
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  model.Team:
+    properties:
+      alias:
+        example: FNOC
+        type: string
+      id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+      logo_url:
+        example: https://example.com/logo.png
+        type: string
+      name:
+        example: Fnatic ONIC
+        type: string
+    type: object
+  model.TeamResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.Team'
+      message:
+        example: Success ambil 1 team!
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  model.TeamsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.Team'
+        type: array
+      message:
+        example: success ngambil data bre!
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  model.User:
+    properties:
+      email:
+        example: john@example.com
+        type: string
+      id:
+        example: user-001
+        type: string
+      password:
+        example: password123
+        type: string
+      role:
+        example: user
+        type: string
+      username:
+        example: john_doe
+        type: string
+    required:
+    - username
+    type: object
+  model.UserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.User'
+      message:
+        example: Berhasil nambahin data user bre!
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+host: localhost:1010
+info:
+  contact: {}
+  description: API untuk manajemen esports
+  title: EMBECK API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user with username and password
+      parameters:
+      - description: Login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: login successful
+          schema:
+            $ref: '#/definitions/model.LoginResponse'
+        "400":
+          description: invalid data
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: invalid credentials
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: invalid user role
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Login user
+      tags:
+      - authentication
+  /player:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all players
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/model.PlayersResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Get all players
+      tags:
+      - players
+    post:
+      consumes:
+      - application/json
+      description: Create a new player with the provided data
+      parameters:
+      - description: Player data
+        in: body
+        name: player
+        required: true
+        schema:
+          $ref: '#/definitions/model.Player'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: player created
+          schema:
+            $ref: '#/definitions/model.APIResponse'
+        "400":
+          description: invalid data
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Create a new player
+      tags:
+      - players
+  /player/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a player by ID
+      parameters:
+      - description: Player ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: player deleted
+          schema:
+            $ref: '#/definitions/model.APIResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Delete a player
+      tags:
+      - players
+    get:
+      consumes:
+      - application/json
+      description: Get a single player by its ID
+      parameters:
+      - description: Player ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/model.PlayerResponse'
+        "404":
+          description: player not found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Get player by ID
+      tags:
+      - players
+    put:
+      consumes:
+      - application/json
+      description: Update an existing player by ID
+      parameters:
+      - description: Player ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated player data
+        in: body
+        name: player
+        required: true
+        schema:
+          $ref: '#/definitions/model.Player'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: player updated
+          schema:
+            $ref: '#/definitions/model.APIResponse'
+        "400":
+          description: invalid data
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Update a player
+      tags:
+      - players
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with username, email, password and role
+      parameters:
+      - description: User registration data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user registered successfully
+          schema:
+            $ref: '#/definitions/model.UserResponse'
+        "400":
+          description: invalid data or admin role not allowed
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - authentication
+  /team:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all teams
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/model.TeamsResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Get all teams
+      tags:
+      - teams
+    post:
+      consumes:
+      - application/json
+      description: Create a new team with the provided data
+      parameters:
+      - description: Team data
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/model.Team'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: team created
+          schema:
+            $ref: '#/definitions/model.APIResponse'
+        "400":
+          description: invalid data
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Create a new team
+      tags:
+      - teams
+  /team/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a team by ID
+      parameters:
+      - description: Team ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: team deleted
+          schema:
+            $ref: '#/definitions/model.APIResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Delete a team
+      tags:
+      - teams
+    get:
+      consumes:
+      - application/json
+      description: Get a single team by its ID
+      parameters:
+      - description: Team ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/model.TeamResponse'
+        "404":
+          description: team not found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Get team by ID
+      tags:
+      - teams
+    put:
+      consumes:
+      - application/json
+      description: Update an existing team by ID
+      parameters:
+      - description: Team ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated team data
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/model.Team'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: team updated
+          schema:
+            $ref: '#/definitions/model.APIResponse'
+        "400":
+          description: invalid data
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Update a team
+      tags:
+      - teams
+swagger: "2.0"

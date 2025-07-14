@@ -1,12 +1,21 @@
 package handler
 
 import (
-	repo "EMBECK/repository"
 	"EMBECK/model"
+	repo "EMBECK/repository"
 
 	"github.com/gofiber/fiber/v2"
 )
 
+// GetAllPlayers godoc
+// @Summary Get all players
+// @Description Get list of all players
+// @Tags players
+// @Accept json
+// @Produce json
+// @Success 200 {object} model.PlayersResponse "success"
+// @Failure 500 {object} model.ErrorResponse "server error"
+// @Router /player [get]
 func GetAllPlayers(c *fiber.Ctx) error {
 	players, err := repo.GetAllPlayers(c.Context())
 	if err != nil {
@@ -21,7 +30,16 @@ func GetAllPlayers(c *fiber.Ctx) error {
 	})
 }
 
-
+// GetPlayerByID godoc
+// @Summary Get player by ID
+// @Description Get a single player by its ID
+// @Tags players
+// @Accept json
+// @Produce json
+// @Param id path string true "Player ID"
+// @Success 200 {object} model.PlayerResponse "success"
+// @Failure 404 {object} model.ErrorResponse "player not found"
+// @Router /player/{id} [get]
 func GetPlayerByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -38,6 +56,17 @@ func GetPlayerByID(c *fiber.Ctx) error {
 	})
 }
 
+// CreatePlayer godoc
+// @Summary Create a new player
+// @Description Create a new player with the provided data
+// @Tags players
+// @Accept json
+// @Produce json
+// @Param player body model.Player true "Player data"
+// @Success 201 {object} model.APIResponse "player created"
+// @Failure 400 {object} model.ErrorResponse "invalid data"
+// @Failure 500 {object} model.ErrorResponse "server error"
+// @Router /player [post]
 func CreatePlayer(c *fiber.Ctx) error {
 	var player model.Player
 	if err := c.BodyParser(&player); err != nil {
@@ -61,6 +90,18 @@ func CreatePlayer(c *fiber.Ctx) error {
 	})
 }
 
+// UpdatePlayer godoc
+// @Summary Update a player
+// @Description Update an existing player by ID
+// @Tags players
+// @Accept json
+// @Produce json
+// @Param id path string true "Player ID"
+// @Param player body model.Player true "Updated player data"
+// @Success 200 {object} model.APIResponse "player updated"
+// @Failure 400 {object} model.ErrorResponse "invalid data"
+// @Failure 500 {object} model.ErrorResponse "server error"
+// @Router /player/{id} [put]
 func UpdatePlayer(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -89,7 +130,16 @@ func UpdatePlayer(c *fiber.Ctx) error {
 	})
 }
 
-
+// DeletePlayer godoc
+// @Summary Delete a player
+// @Description Delete a player by ID
+// @Tags players
+// @Accept json
+// @Produce json
+// @Param id path string true "Player ID"
+// @Success 200 {object} model.APIResponse "player deleted"
+// @Failure 500 {object} model.ErrorResponse "server error"
+// @Router /player/{id} [delete]
 func DeletePlayer(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -105,4 +155,3 @@ func DeletePlayer(c *fiber.Ctx) error {
 		"message": "Player berhasil dihapus!",
 	})
 }
-

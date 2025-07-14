@@ -2,6 +2,7 @@ package main
 
 import (
 	"EMBECK/config"
+	_ "EMBECK/docs"
 	"EMBECK/router"
 	"log"
 	"os"
@@ -10,11 +11,18 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
 )
 
+// @title EMBECK API
+// @version 1.0
+// @description API untuk manajemen esports
+// @host localhost:1010
+// @BasePath /api
+
 func init() {
-	_ = godotenv.Load() 
+	_ = godotenv.Load()
 
 	config.ConnectDB() // Initialize MongoDB connection
 }
@@ -33,6 +41,9 @@ func main() {
 
 	// Setup routes
 	router.SetupRoutes(app)
+
+	// Swagger route
+	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	// Fallback route for 404
 	app.Use(func(c *fiber.Ctx) error {

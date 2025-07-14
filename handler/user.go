@@ -67,7 +67,7 @@ func CreateUser(c *fiber.Ctx) error {
 		"message": "Berhasil nambahin data user bre!",
 		"data":    user,
 	})
-	}
+}
 
 func UpdateUser(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -94,7 +94,7 @@ func UpdateUser(c *fiber.Ctx) error {
 		"status":  fiber.StatusOK,
 		"message": "Berhasil update data user bre!",
 	})
-	}
+}
 func DeleteUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -113,9 +113,33 @@ func DeleteUser(c *fiber.Ctx) error {
 	})
 }
 
+// RegisterHandler godoc
+// @Summary Register a new user
+// @Description Register a new user with username, email, password and role
+// @Tags authentication
+// @Accept json
+// @Produce json
+// @Param user body model.RegisterRequest true "User registration data"
+// @Success 200 {object} model.UserResponse "user registered successfully"
+// @Failure 400 {object} model.ErrorResponse "invalid data or admin role not allowed"
+// @Failure 500 {object} model.ErrorResponse "server error"
+// @Router /register [post]
 func RegisterHandler(c *fiber.Ctx) error {
 	return auth.Register(c)
 }
+
+// LoginHandler godoc
+// @Summary Login user
+// @Description Authenticate user with username and password
+// @Tags authentication
+// @Accept json
+// @Produce json
+// @Param user body model.LoginRequest true "Login credentials"
+// @Success 200 {object} model.LoginResponse "login successful"
+// @Failure 400 {object} model.ErrorResponse "invalid data"
+// @Failure 401 {object} model.ErrorResponse "invalid credentials"
+// @Failure 403 {object} model.ErrorResponse "invalid user role"
+// @Router /login [post]
 func LoginHandler(c *fiber.Ctx) error {
 	return auth.Login(c)
 }
