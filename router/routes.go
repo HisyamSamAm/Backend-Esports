@@ -1,6 +1,7 @@
 package router
 
 import (
+	"EMBECK/auth"
 	"EMBECK/handler"
 
 	"github.com/gofiber/fiber/v2"
@@ -45,8 +46,8 @@ func SetupRoutes(app *fiber.App) {
 	app.Delete("/api/user/:id", handler.DeleteUser)
 
 	//endpoint auth
-	app.Post("/api/login", handler.LoginHandler)
-	app.Post("/api/register", handler.RegisterHandler)
+	app.Post("/api/login", auth.Login)
+	app.Post("/api/register", auth.Register)
 
 	//endpoint ticket
 	api.Get("/ticket", handler.GetAllTickets)

@@ -2,8 +2,8 @@ package handler
 
 import (
 	"EMBECK/auth"
-	"EMBECK/model"
 	repo "EMBECK/repository"
+	"EMBECK/model"
 
 	"github.com/gofiber/fiber/v2"
 )

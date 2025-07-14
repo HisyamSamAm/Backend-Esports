@@ -1,6 +1,7 @@
 package model
 
 type User struct {
+<<<<<<< HEAD
 	ID       string `json:"id" bson:"id,omitempty" example:"user-001"`
 	Username string `json:"username" bson:"username" validate:"required" example:"john_doe"`
 	Role     string `json:"role" bson:"role" example:"user"`
@@ -39,4 +40,27 @@ type LoginResponse struct {
 	Status  int    `json:"status" example:"200"`
 	Message string `json:"message" example:"Berhasil login sebagai user"`
 	Data    User   `json:"data"`
+=======
+	ID       string `json:"id" bson:"id,omitempty"`
+	Username string `json:"username" bson:"username" validate:"required"`
+	Email    string `json:"email" bson:"email"`
+	Role     string `json:"role" bson:"role"`
+	Password string `json:"password" bson:"password"`
+}
+type UserLogin struct {
+	Username string `json:"username" bson:"username"`
+	Password string `json:"password" bson:"password"`
+	Role     string `json:"role" bson:"role"`
+}
+
+type RegisterRequest struct {
+	Username string `json:"username" bson:"username" validate:"required"`
+	Email    string `json:"email" bson:"email" validate:"required,email"`
+	Password string `json:"password" bson:"password" validate:"required"`
+}
+
+type Payload struct {
+	User string `json:"user"`
+	Role string `json:"role"`
+>>>>>>> 4d86ebc93116bd04a770e6a9be3c2754399fe534
 }

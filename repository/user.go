@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func GetAllUsers(ctx context.Context) ([]model.User, error) {
@@ -79,16 +80,40 @@ func DeleteUser(ctx context.Context, id string) error {
 	return nil
 }
 
-func AuthenticateUser(ctx context.Context, username, password string) (model.User, error) {
-	collection := config.DB.Collection("users")
+func FindUserByUsername(ctx context.Context, username string) (*model.UserLogin, error) {
+	userCollection := config.DB.Collection("users")
 
-	filter := bson.M{"username": username, "password": password}
-	var user model.User
-	err := collection.FindOne(ctx, filter).Decode(&user)
+	var user model.UserLogin
+	filter := bson.M{"username": username}
+
+	err := userCollection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
-		fmt.Println("AuthenticateUser:", err)
-		return model.User{}, err
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("username %s tidak ditemukan", username)
+		}
+		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
+}
+
+func InsertUser(ctx context.Context, user model.UserLogin) (interface{}, error) {
+	collection := config.DB.Collection("users")
+
+	// Cek apakah username sudah ada
+	filter := bson.M{"username": user.Username}
+	count, err := collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	if count > 0 {
+		return nil, fmt.Errorf("username %s sudah digunakan", user.Username)
+	}
+
+	res, err := collection.InsertOne(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.InsertedID, nil
 }

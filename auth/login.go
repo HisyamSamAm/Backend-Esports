@@ -1,53 +1,45 @@
 package auth
 
 import (
+	"EMBECK/config/middleware"
 	"EMBECK/model"
-	usr "EMBECK/repository"
+	pwd "EMBECK/pkg"
+	repo "EMBECK/repository"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func Login(c *fiber.Ctx) error {
-	var user model.User
+	var req model.UserLogin
 
-	if err := c.BodyParser(&user); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"status":  fiber.StatusBadRequest,
-			"message": "Data gak valid bre!",
-			"data":    nil,
-		})
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid body"})
 	}
 
-	// Authenticate user against database or auth system
-	dbUser, err := usr.AuthenticateUser(c.Context(), user.Username, user.Password)
+	user, err := repo.FindUserByUsername(c.Context(), req.Username)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"status":  fiber.StatusUnauthorized,
-			"message": "Invalid username or password",
-			"data":    nil,
-		})
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Username not found"})
 	}
 
-	// Check user role
-	if dbUser.Role == "admin" {
-		// Redirect to admin dashboard
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"status":  fiber.StatusOK,
-			"message": "Berhasil login sebagai admin",
-			"data":    dbUser,
-		})
-	} else if dbUser.Role == "user" {
-		// Redirect to user dashboard
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"status":  fiber.StatusOK,
-			"message": "Berhasil login sebagai user",
-			"data":    dbUser,
-		})
-	} else {
-		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-			"status":  fiber.StatusForbidden,
-			"message": "Invalid user role",
-			"data":    nil,
-		})
+	// Cek password input hash yang tersimpan
+	if !pwd.CheckPasswordHash(req.Password, user.Password) {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Wrong password"})
 	}
+<<<<<<< HEAD
 }
+=======
+
+	// Generate token PASETO
+	token, err := middleware.EncodeWithRoleHours(user.Role, user.Username, 2)
+	if err != nil {
+		fmt.Println("Token generation error:", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to generate token"})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Login success",
+		"token":   token,
+	})
+}
+>>>>>>> 4d86ebc93116bd04a770e6a9be3c2754399fe534
