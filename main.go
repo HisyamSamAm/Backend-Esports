@@ -1,65 +1,84 @@
 package main
 
 import (
-	"EMBECK/config"
-	_ "EMBECK/docs"
-	"EMBECK/router"
+	"embeck/config"
+	"embeck/router"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
+
+	_ "embeck/docs"
 )
 
-// @title EMBECK API
-// @version 1.0
-// @description API untuk manajemen esports
-// @host localhost:1010
-// @BasePath /api
-
 func init() {
-	_ = godotenv.Load()
-
-	config.ConnectDB() // Initialize MongoDB connection
+	// Load .env file if exists
+	if _, err := os.Stat(".env"); err == nil {
+		err := godotenv.Load()
+		if err != nil {
+			log.Println("Warning: Could not load .env file")
+		}
+	}
 }
 
-func main() {
-	app := fiber.New()
+// @title EMBECK API - Turnamen Esports Management
+// @version 1.0
+// @description API untuk manajemen turnamen esports Mobile Legends
 
+// @contact.name API Support
+// @contact.url https://github.com/rrq-dev/EMBECK
+// @contact.email support@embeck.com
+
+// @BasePath /
+// @schemes http https
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+func main() {
+	// Create Fiber app
+	app := fiber.New(fiber.Config{
+		AppName: "EMBECK API v1.0",
+	})
+
+	// Middleware
 	app.Use(logger.New())
-	// CORS setup
-	app.Use(cors.New(cors.Config{
-		AllowOrigins:     strings.Join(config.GetAllowedOrigins(), ","),
-		AllowMethods:     "GET,POST,PUT,DELETE",
-		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
-		AllowCredentials: true,
-	}))
+	app.Use(cors.New())
+
+	// Test database connection
+	db := config.MongoConnect(config.DBName)
+	if db == nil {
+		log.Fatal("Failed to connect to database")
+	}
 
 	// Setup routes
 	router.SetupRoutes(app)
 
-	// Swagger route
-	app.Get("/swagger/*", swagger.HandlerDefault)
-
-	// Fallback route for 404
-	app.Use(func(c *fiber.Ctx) error {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"status":  fiber.StatusNotFound,
-			"message": "Endpoint not found",
+	// Routes
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"message":  "Hello, EMBECK Backend is running! 🚀",
+			"version":  "1.0.0",
+			"status":   "active",
+			"database": "connected",
 		})
 	})
 
-	// Ambil port dari .env, default ke 8080
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"status": "healthy",
+			"uptime": "running",
+		})
+	})
+
+	// Get port from environment or use default
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "3000"
 	}
-	log.Printf("Server running on port %s", port)
-	if err := app.Listen(":" + port); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
-	}
+
+	log.Printf("🚀 Server starting on port %s", port)
+	log.Fatal(app.Listen(":" + port))
 }

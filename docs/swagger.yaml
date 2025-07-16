@@ -1,195 +1,1230 @@
-basePath: /api
+basePath: /
 definitions:
-  model.APIResponse:
+  model.AuthResponse:
     properties:
-      data: {}
       message:
-        example: Success message
-        type: string
-      status:
-        example: 200
-        type: integer
-    type: object
-  model.ErrorResponse:
-    properties:
-      data: {}
-      message:
-        example: Error message
-        type: string
-      status:
-        example: 400
-        type: integer
-    type: object
-  model.LoginRequest:
-    properties:
-      password:
-        example: password123
-        type: string
-      username:
-        example: john_doe
-        type: string
-    required:
-    - password
-    - username
-    type: object
-  model.LoginResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.User'
-      message:
-        example: Berhasil login sebagai user
-        type: string
-      status:
-        example: 200
-        type: integer
-    type: object
-  model.Player:
-    properties:
-      id:
-        example: player-001
-        type: string
-      in_game_name:
-        example: JohnMLBB
-        type: string
-      name:
-        example: John Doe
-        type: string
-      role:
-        example: Tank
-        type: string
-      team_id:
-        example: team-fnoc
-        type: string
-    type: object
-  model.PlayerResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.Player'
-      message:
-        example: Berhasil ambil player!
-        type: string
-      status:
-        example: 200
-        type: integer
-    type: object
-  model.PlayersResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.Player'
-        type: array
-      message:
-        example: Berhasil ambil data players!
-        type: string
-      status:
-        example: 200
-        type: integer
-    type: object
-  model.RegisterRequest:
-    properties:
-      email:
-        example: john@example.com
-        type: string
-      password:
-        example: password123
+        example: Login successful
         type: string
       role:
         example: user
         type: string
+      token:
+        example: v2.local.xxx
+        type: string
+      user_id:
+        example: 64f123abc456def789012345
+        type: string
+    type: object
+  model.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  model.LoginRequest:
+    properties:
+      email:
+        example: user.example@example.com
+        type: string
+      password:
+        example: passwordAman123
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  model.Match:
+    properties:
+      _id:
+        type: string
+      created_at:
+        type: string
+      location:
+        type: string
+      match_date:
+        type: string
+      match_time:
+        type: string
+      result_team_a_score:
+        type: integer
+      result_team_b_score:
+        type: integer
+      round:
+        type: string
+      status:
+        type: string
+      team_a_id:
+        type: string
+      team_b_id:
+        type: string
+      tournament_id:
+        type: string
+      updated_at:
+        type: string
+      winner_team_id:
+        type: string
+    type: object
+  model.MatchBasicInfo:
+    properties:
+      _id:
+        type: string
+      location:
+        type: string
+      match_date:
+        type: string
+      match_time:
+        type: string
+      result_team_a_score:
+        type: integer
+      result_team_b_score:
+        type: integer
+      round:
+        type: string
+      status:
+        type: string
+      team_a:
+        $ref: '#/definitions/model.TeamBasicInfo'
+      team_b:
+        $ref: '#/definitions/model.TeamBasicInfo'
+      winner_team_id:
+        type: string
+    type: object
+  model.MatchRequest:
+    properties:
+      location:
+        type: string
+      match_date:
+        type: string
+      match_time:
+        type: string
+      result_team_a_score:
+        type: integer
+      result_team_b_score:
+        type: integer
+      round:
+        type: string
+      status:
+        enum:
+        - scheduled
+        - ongoing
+        - completed
+        - cancelled
+        type: string
+      team_a_id:
+        type: string
+      team_b_id:
+        type: string
+      tournament_id:
+        type: string
+      winner_team_id:
+        type: string
+    required:
+    - match_date
+    - match_time
+    - round
+    - status
+    - team_a_id
+    - team_b_id
+    - tournament_id
+    type: object
+  model.MatchResponse:
+    properties:
+      match_id:
+        type: string
+      message:
+        type: string
+    type: object
+  model.Player:
+    properties:
+      _id:
+        type: string
+      avatar_url:
+        type: string
+      created_at:
+        type: string
+      ml_id:
+        type: string
+      ml_nickname:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.PlayerDetails:
+    properties:
+      _id:
+        type: string
+      ml_nickname:
+        type: string
+    type: object
+  model.PlayerRequest:
+    properties:
+      avatar_url:
+        type: string
+      ml_id:
+        type: string
+      ml_nickname:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+    type: object
+  model.PlayerResponse:
+    properties:
+      message:
+        type: string
+      player_id:
+        type: string
+    type: object
+  model.RegisterRequest:
+    properties:
+      email:
+        example: user.baru@example.com
+        type: string
+      password:
+        example: passwordAman123
+        minLength: 6
+        type: string
       username:
-        example: john_doe
+        example: userbaru123
+        maxLength: 50
+        minLength: 3
         type: string
     required:
     - email
     - password
     - username
     type: object
-  model.Team:
+  model.TeamBasicInfo:
     properties:
-      alias:
-        example: FNOC
-        type: string
-      id:
-        example: 507f1f77bcf86cd799439011
+      _id:
         type: string
       logo_url:
-        example: https://example.com/logo.png
         type: string
-      name:
-        example: Fnatic ONIC
+      team_name:
+        type: string
+    type: object
+  model.TeamRequest:
+    properties:
+      captain_id:
+        type: string
+      logo_url:
+        type: string
+      members:
+        items:
+          type: string
+        type: array
+      team_name:
         type: string
     type: object
   model.TeamResponse:
     properties:
-      data:
-        $ref: '#/definitions/model.Team'
       message:
-        example: Success ambil 1 team!
         type: string
-      status:
-        example: 200
-        type: integer
+      team_id:
+        type: string
     type: object
-  model.TeamsResponse:
+  model.TeamWithDetails:
     properties:
-      data:
+      _id:
+        type: string
+      captain_details:
+        $ref: '#/definitions/model.PlayerDetails'
+      captain_id:
+        type: string
+      created_at:
+        type: string
+      logo_url:
+        type: string
+      members:
         items:
-          $ref: '#/definitions/model.Team'
+          type: string
         type: array
+      team_name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.Ticket:
+    properties:
+      _id:
+        example: 64f123abc456def789012345
+        type: string
+      created_at:
+        example: "2025-07-16T07:28:37.016Z"
+        type: string
+      description:
+        example: Tiket Reguler - Tribun A (Standing)
+        type: string
+      price:
+        example: 50000
+        type: integer
+      quantity_available:
+        example: 1000
+        type: integer
+      tournament_id:
+        example: 64f123abc456def789012345
+        type: string
+      updated_at:
+        example: "2025-07-16T07:28:37.016Z"
+        type: string
+    type: object
+  model.TicketRequest:
+    properties:
+      description:
+        example: Tiket Reguler - Tribun A (Standing)
+        type: string
+      price:
+        example: 50000
+        minimum: 0
+        type: integer
+      quantity_available:
+        example: 1000
+        minimum: 0
+        type: integer
+      tournament_id:
+        example: 64f123abc456def789012345
+        type: string
+    required:
+    - price
+    - quantity_available
+    - tournament_id
+    type: object
+  model.TicketResponse:
+    properties:
       message:
-        example: success ngambil data bre!
+        example: Ticket type created successfully
+        type: string
+      ticket_id:
+        example: 64f123abc456def789012345
+        type: string
+    type: object
+  model.TicketWithTournament:
+    properties:
+      _id:
+        example: 64f123abc456def789012345
+        type: string
+      created_at:
+        example: "2025-07-16T07:28:37.016Z"
+        type: string
+      description:
+        example: Tiket Reguler - Tribun A (Standing)
+        type: string
+      price:
+        example: 50000
+        type: integer
+      quantity_available:
+        example: 1000
+        type: integer
+      tournament:
+        $ref: '#/definitions/model.TournamentBasic'
+      tournament_id:
+        example: 64f123abc456def789012345
+        type: string
+      updated_at:
+        example: "2025-07-16T07:28:37.016Z"
+        type: string
+    type: object
+  model.Tournament:
+    properties:
+      _id:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      name:
+        type: string
+      prize_pool:
+        type: string
+      rules_document_url:
+        type: string
+      start_date:
         type: string
       status:
-        example: 200
-        type: integer
+        type: string
+      teams_participating:
+        items:
+          type: string
+        type: array
+      updated_at:
+        type: string
     type: object
-  model.User:
+  model.TournamentBasic:
     properties:
+      _id:
+        example: 64f123abc456def789012345
+        type: string
+      name:
+        example: Mobile Legends Championship 2025
+        type: string
+      status:
+        example: upcoming
+        type: string
+    type: object
+  model.TournamentPublic:
+    properties:
+      _id:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      name:
+        type: string
+      prize_pool:
+        type: string
+      rules_document_url:
+        type: string
+      start_date:
+        type: string
+      status:
+        type: string
+    type: object
+  model.TournamentRequest:
+    properties:
+      description:
+        type: string
+      end_date:
+        type: string
+      name:
+        type: string
+      prize_pool:
+        type: string
+      rules_document_url:
+        type: string
+      start_date:
+        type: string
+      status:
+        enum:
+        - upcoming
+        - ongoing
+        - completed
+        type: string
+      teams_participating:
+        items:
+          type: string
+        type: array
+    required:
+    - description
+    - end_date
+    - name
+    - prize_pool
+    - start_date
+    - status
+    type: object
+  model.TournamentResponse:
+    properties:
+      message:
+        type: string
+      tournament_id:
+        type: string
+    type: object
+  model.TournamentWithDetails:
+    properties:
+      _id:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      matches:
+        items:
+          $ref: '#/definitions/model.MatchBasicInfo'
+        type: array
+      name:
+        type: string
+      prize_pool:
+        type: string
+      rules_document_url:
+        type: string
+      start_date:
+        type: string
+      status:
+        type: string
+      teams_participating:
+        items:
+          $ref: '#/definitions/model.TeamBasicInfo'
+        type: array
+    type: object
+  model.UploadResponse:
+    properties:
+      file_name:
+        type: string
+      file_url:
+        type: string
+      message:
+        type: string
+    type: object
+  model.UserProfile:
+    properties:
+      _id:
+        example: 64f123abc456def789012345
+        type: string
+      created_at:
+        example: "2025-07-16T07:28:37.016Z"
+        type: string
       email:
-        example: john@example.com
-        type: string
-      id:
-        example: user-001
-        type: string
-      password:
-        example: password123
+        example: user.example@example.com
         type: string
       role:
         example: user
         type: string
-      username:
-        example: john_doe
+      updated_at:
+        example: "2025-07-16T07:28:37.016Z"
         type: string
-    required:
-    - username
+      username:
+        example: userbaru123
+        type: string
     type: object
   model.UserResponse:
     properties:
-      data:
-        $ref: '#/definitions/model.User'
       message:
-        example: Berhasil nambahin data user bre!
+        example: User registered successfully
         type: string
-      status:
-        example: 200
-        type: integer
+      user_id:
+        example: 64f123abc456def789012345
+        type: string
     type: object
-host: localhost:1010
 info:
-  contact: {}
-  description: API untuk manajemen esports
-  title: EMBECK API
+  contact:
+    email: support@embeck.com
+    name: API Support
+    url: https://github.com/rrq-dev/EMBECK
+  description: API untuk manajemen turnamen esports Mobile Legends
+  title: EMBECK API - Turnamen Esports Management
   version: "1.0"
 paths:
-  /login:
+  /api/admin/matches:
+    get:
+      consumes:
+      - application/json
+      description: Mendapatkan daftar semua pertandingan dengan filter tournament_id
+        opsional
+      parameters:
+      - description: Tournament ID filter
+        in: query
+        name: tournament_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Match'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get All Matches
+      tags:
+      - Matches
     post:
       consumes:
       - application/json
-      description: Authenticate user with username and password
+      description: Membuat pertandingan baru untuk turnamen
       parameters:
-      - description: Login credentials
+      - description: Match data
         in: body
-        name: user
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.MatchRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.MatchResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create New Match
+      tags:
+      - Matches
+  /api/admin/matches/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Menghapus pertandingan dari database
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MatchResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete Match
+      tags:
+      - Matches
+    get:
+      consumes:
+      - application/json
+      description: Mendapatkan detail pertandingan berdasarkan ID
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Match'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Match By ID
+      tags:
+      - Matches
+    put:
+      consumes:
+      - application/json
+      description: Memperbarui detail pertandingan termasuk input skor
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Match data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.MatchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MatchResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update Match
+      tags:
+      - Matches
+  /api/admin/players:
+    get:
+      consumes:
+      - application/json
+      - application/json
+      description: Menghapus pemain dari database
+      produces:
+      - application/json
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Player'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete Player
+      tags:
+      - Players
+      - Players
+  /api/admin/players/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Menghapus pemain dari database
+      parameters:
+      - description: Player ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PlayerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete Player
+      tags:
+      - Players
+    get:
+      consumes:
+      - application/json
+      description: Mendapatkan detail pemain berdasarkan ID
+      parameters:
+      - description: Player ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Player'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Player By ID
+      tags:
+      - Players
+  /api/admin/teams:
+    get:
+      consumes:
+      - application/json
+      description: Mendapatkan daftar semua tim dengan detail kapten
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.TeamWithDetails'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get All Teams
+      tags:
+      - Teams
+    post:
+      consumes:
+      - application/json
+      description: Membuat tim baru dengan kapten dan anggota
+      parameters:
+      - description: Team data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.TeamRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.TeamResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create New Team
+      tags:
+      - Teams
+  /api/admin/teams/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Menghapus tim dari database
+      parameters:
+      - description: Team ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TeamResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete Team
+      tags:
+      - Teams
+    get:
+      consumes:
+      - application/json
+      description: Mendapatkan detail tim berdasarkan ID dengan detail kapten
+      parameters:
+      - description: Team ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TeamWithDetails'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Team By ID
+      tags:
+      - Teams
+    put:
+      consumes:
+      - application/json
+      description: Memperbarui detail tim
+      parameters:
+      - description: Team ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Team data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.TeamRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TeamResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update Team
+      tags:
+      - Teams
+  /api/admin/tickets:
+    get:
+      consumes:
+      - application/json
+      description: Mendapatkan daftar semua jenis tiket dengan opsi filter dan populate
+        tournament details
+      parameters:
+      - description: Filter berdasarkan Tournament ID
+        in: query
+        name: tournament_id
+        type: string
+      - default: false
+        description: Include tournament details (true/false)
+        in: query
+        name: populate
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List semua ticket types dengan tournament details (dengan populate=true)
+          schema:
+            items:
+              $ref: '#/definitions/model.TicketWithTournament'
+            type: array
+        "400":
+          description: Tournament ID format tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Gagal mengambil data dari database
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get All Ticket Types
+      tags:
+      - Tickets
+  /api/admin/tickets/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Menghapus jenis tiket dari database secara permanen. Operasi ini
+        tidak dapat dibatalkan.
+      parameters:
+      - description: Ticket ID (ObjectID format)
+        example: '"64f123abc456def789012345"'
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ticket berhasil dihapus
+          schema:
+            $ref: '#/definitions/model.TicketResponse'
+        "400":
+          description: Ticket ID format tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Ticket type tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete Ticket Type
+      tags:
+      - Tickets
+    get:
+      consumes:
+      - application/json
+      description: Mendapatkan detail jenis tiket berdasarkan ID dengan opsi populate
+        tournament details
+      parameters:
+      - description: Ticket ID (ObjectID format)
+        example: '"64f123abc456def789012345"'
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: false
+        description: Include tournament details (true/false)
+        in: query
+        name: populate
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Detail ticket type dengan tournament details (dengan populate=true)
+          schema:
+            $ref: '#/definitions/model.TicketWithTournament'
+        "400":
+          description: Ticket ID format tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Ticket type tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Ticket Type By ID
+      tags:
+      - Tickets
+    put:
+      consumes:
+      - application/json
+      description: Memperbarui detail jenis tiket. Field yang tidak diisi akan tetap
+        menggunakan nilai lama.
+      parameters:
+      - description: Ticket ID (ObjectID format)
+        example: '"64f123abc456def789012345"'
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data tiket yang akan diupdate (partial update supported)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.TicketRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ticket berhasil diupdate
+          schema:
+            $ref: '#/definitions/model.TicketResponse'
+        "400":
+          description: Request data atau ID format tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Ticket type tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update Ticket Type
+      tags:
+      - Tickets
+  /api/admin/tournaments:
+    get:
+      description: Get all tournaments with admin details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Tournament'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all tournaments
+      tags:
+      - Tournament Management (Admin)
+    post:
+      consumes:
+      - application/json
+      description: Create a new tournament (admin access required)
+      parameters:
+      - description: Tournament data
+        in: body
+        name: tournament
+        required: true
+        schema:
+          $ref: '#/definitions/model.TournamentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.TournamentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create new tournament
+      tags:
+      - Tournament Management (Admin)
+  /api/admin/tournaments/{id}:
+    delete:
+      description: Delete tournament by ID
+      parameters:
+      - description: Tournament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TournamentResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete tournament
+      tags:
+      - Tournament Management (Admin)
+    get:
+      description: Get tournament details by ID (admin access)
+      parameters:
+      - description: Tournament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Tournament'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get tournament by ID
+      tags:
+      - Tournament Management (Admin)
+    put:
+      consumes:
+      - application/json
+      description: Update tournament details including participating teams
+      parameters:
+      - description: Tournament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Tournament data
+        in: body
+        name: tournament
+        required: true
+        schema:
+          $ref: '#/definitions/model.TournamentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TournamentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update tournament
+      tags:
+      - Tournament Management (Admin)
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user dan mendapatkan PASETO token untuk autentikasi
+      parameters:
+      - description: Data login user
+        in: body
+        name: request
         required: true
         schema:
           $ref: '#/definitions/model.LoginRequest'
@@ -197,314 +1232,418 @@ paths:
       - application/json
       responses:
         "200":
-          description: login successful
+          description: Login berhasil dengan token
           schema:
-            $ref: '#/definitions/model.LoginResponse'
+            $ref: '#/definitions/model.AuthResponse'
         "400":
-          description: invalid data
+          description: Request data tidak valid
           schema:
-            $ref: '#/definitions/model.ErrorResponse'
+            additionalProperties: true
+            type: object
         "401":
-          description: invalid credentials
+          description: Kredensial tidak valid
           schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "403":
-          description: invalid user role
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
           schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Login user
+            additionalProperties: true
+            type: object
+      summary: User Login
       tags:
-      - authentication
-  /player:
+      - Authentication
+  /api/auth/profile:
     get:
       consumes:
       - application/json
-      description: Get list of all players
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: success
-          schema:
-            $ref: '#/definitions/model.PlayersResponse'
-        "500":
-          description: server error
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Get all players
-      tags:
-      - players
-    post:
-      consumes:
-      - application/json
-      description: Create a new player with the provided data
+      description: Mendapatkan profil user untuk testing - tidak memerlukan authentication
+        (demo mode)
       parameters:
-      - description: Player data
-        in: body
-        name: player
-        required: true
-        schema:
-          $ref: '#/definitions/model.Player'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: player created
-          schema:
-            $ref: '#/definitions/model.APIResponse'
-        "400":
-          description: invalid data
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "500":
-          description: server error
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Create a new player
-      tags:
-      - players
-  /player/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a player by ID
-      parameters:
-      - description: Player ID
-        in: path
-        name: id
-        required: true
+      - description: User ID untuk mendapatkan profil (opsional)
+        in: query
+        name: user_id
         type: string
       produces:
       - application/json
       responses:
         "200":
-          description: player deleted
+          description: Profil user
           schema:
-            $ref: '#/definitions/model.APIResponse'
-        "500":
-          description: server error
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Delete a player
-      tags:
-      - players
-    get:
-      consumes:
-      - application/json
-      description: Get a single player by its ID
-      parameters:
-      - description: Player ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: success
-          schema:
-            $ref: '#/definitions/model.PlayerResponse'
+            $ref: '#/definitions/model.UserProfile'
         "404":
-          description: player not found
+          description: User tidak ditemukan
           schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Get player by ID
-      tags:
-      - players
-    put:
-      consumes:
-      - application/json
-      description: Update an existing player by ID
-      parameters:
-      - description: Player ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Updated player data
-        in: body
-        name: player
-        required: true
-        schema:
-          $ref: '#/definitions/model.Player'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: player updated
-          schema:
-            $ref: '#/definitions/model.APIResponse'
-        "400":
-          description: invalid data
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
+            additionalProperties: true
+            type: object
         "500":
-          description: server error
+          description: Internal server error
           schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Update a player
+            additionalProperties: true
+            type: object
+      summary: Get User Profile (Demo Mode)
       tags:
-      - players
-  /register:
+      - Authentication
+  /api/auth/register:
     post:
       consumes:
       - application/json
-      description: Register a new user with username, email, password and role
+      description: Mendaftarkan user baru ke dalam sistem
       parameters:
-      - description: User registration data
+      - description: Data registrasi user
         in: body
-        name: user
+        name: request
         required: true
         schema:
           $ref: '#/definitions/model.RegisterRequest'
       produces:
       - application/json
       responses:
-        "200":
-          description: user registered successfully
+        "201":
+          description: User berhasil didaftarkan
           schema:
             $ref: '#/definitions/model.UserResponse'
         "400":
-          description: invalid data or admin role not allowed
+          description: Request data tidak valid
           schema:
-            $ref: '#/definitions/model.ErrorResponse'
+            additionalProperties: true
+            type: object
+        "409":
+          description: Email atau username sudah digunakan
+          schema:
+            additionalProperties: true
+            type: object
         "500":
-          description: server error
+          description: Internal server error
           schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Register a new user
+            additionalProperties: true
+            type: object
+      summary: Register New User
       tags:
-      - authentication
-  /team:
-    get:
-      consumes:
-      - application/json
-      description: Get list of all teams
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: success
-          schema:
-            $ref: '#/definitions/model.TeamsResponse'
-        "500":
-          description: server error
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Get all teams
-      tags:
-      - teams
+      - Authentication
+  /api/players:
     post:
       consumes:
       - application/json
-      description: Create a new team with the provided data
+      description: Menambahkan pemain baru ke database
       parameters:
-      - description: Team data
+      - description: Player data
         in: body
-        name: team
+        name: request
         required: true
         schema:
-          $ref: '#/definitions/model.Team'
+          $ref: '#/definitions/model.PlayerRequest'
       produces:
       - application/json
       responses:
         "201":
-          description: team created
+          description: Created
           schema:
-            $ref: '#/definitions/model.APIResponse'
+            $ref: '#/definitions/model.PlayerResponse'
         "400":
-          description: invalid data
+          description: Bad Request
           schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "500":
-          description: server error
+            additionalProperties: true
+            type: object
+        "409":
+          description: Conflict
           schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Create a new team
+            additionalProperties: true
+            type: object
+      summary: Create New Player
       tags:
-      - teams
-  /team/{id}:
+      - Players
+  /api/players/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete a team by ID
+      - application/json
+      description: Menghapus pemain dari database
       parameters:
-      - description: Team ID
+      - description: Player ID
         in: path
         name: id
         required: true
         type: string
       produces:
       - application/json
-      responses:
-        "200":
-          description: team deleted
-          schema:
-            $ref: '#/definitions/model.APIResponse'
-        "500":
-          description: server error
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Delete a team
-      tags:
-      - teams
-    get:
-      consumes:
-      - application/json
-      description: Get a single team by its ID
-      parameters:
-      - description: Team ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
       - application/json
       responses:
         "200":
-          description: success
+          description: OK
           schema:
-            $ref: '#/definitions/model.TeamResponse'
+            items:
+              $ref: '#/definitions/model.Player'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
         "404":
-          description: team not found
+          description: Not Found
           schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Get team by ID
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete Player
       tags:
-      - teams
+      - Players
+      - Players
     put:
       consumes:
       - application/json
-      description: Update an existing team by ID
+      description: Memperbarui detail pemain
       parameters:
-      - description: Team ID
+      - description: Player ID
         in: path
         name: id
         required: true
         type: string
-      - description: Updated team data
+      - description: Player data
         in: body
-        name: team
+        name: request
         required: true
         schema:
-          $ref: '#/definitions/model.Team'
+          $ref: '#/definitions/model.PlayerRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: team updated
+          description: OK
           schema:
-            $ref: '#/definitions/model.APIResponse'
+            $ref: '#/definitions/model.PlayerResponse'
         "400":
-          description: invalid data
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update Player
+      tags:
+      - Players
+  /api/tickets:
+    post:
+      consumes:
+      - application/json
+      description: Membuat jenis tiket baru untuk turnamen. Setiap tournament bisa
+        memiliki berbagai jenis tiket dengan harga dan kapasitas yang berbeda.
+      parameters:
+      - description: Data tiket yang akan dibuat
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.TicketRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Ticket berhasil dibuat
+          schema:
+            $ref: '#/definitions/model.TicketResponse'
+        "400":
+          description: Request data tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Tournament tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create New Ticket Type
+      tags:
+      - Tickets
+  /api/tickets/user/{userId}:
+    get:
+      consumes:
+      - application/json
+      description: Mendapatkan semua tiket yang dimiliki oleh user tertentu
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List tiket user
+          schema:
+            items:
+              $ref: '#/definitions/model.Ticket'
+            type: array
+        "400":
+          description: ID user tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Tickets by User ID
+      tags:
+      - Tickets
+  /api/tournaments:
+    get:
+      description: Get all tournaments without admin details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.TournamentPublic'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Get all tournaments (public)
+      tags:
+      - Tournament Data (Public)
+  /api/tournaments/{id}:
+    get:
+      description: Get tournament with populated teams and matches
+      parameters:
+      - description: Tournament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TournamentWithDetails'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/model.ErrorResponse'
         "500":
-          description: server error
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ErrorResponse'
-      summary: Update a team
+      summary: Get tournament details (public)
       tags:
-      - teams
+      - Tournament Data (Public)
+  /api/tournaments/{id}/tickets:
+    get:
+      consumes:
+      - application/json
+      description: Mendapatkan semua jenis tiket yang tersedia untuk tournament tertentu
+      parameters:
+      - description: Tournament ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List tiket untuk tournament
+          schema:
+            items:
+              $ref: '#/definitions/model.Ticket'
+            type: array
+        "400":
+          description: ID tournament tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Tickets by Tournament ID
+      tags:
+      - Tickets
+  /api/upload/player-avatar:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload player avatar image (PNG, JPG, JPEG)
+      parameters:
+      - description: Player avatar image file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UploadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Upload player avatar
+      tags:
+      - Upload
+  /api/upload/team-logo:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload team logo image (PNG, JPG, JPEG)
+      parameters:
+      - description: Team logo image file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UploadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Upload team logo
+      tags:
+      - Upload
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
