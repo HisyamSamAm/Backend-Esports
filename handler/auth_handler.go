@@ -1,8 +1,8 @@
 package handler
 
 import (
+	"embeck/config/middleware"
 	"embeck/model"
-	"embeck/pkg/auth"
 	"embeck/pkg/password"
 	"embeck/repository"
 	"regexp"
@@ -103,14 +103,12 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	// Validation
 	if req.Email == "" || req.Password == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Email and password are required",
 		})
 	}
 
-	// Get user by email
 	user, err := repository.GetUserByEmail(c.Context(), strings.ToLower(req.Email))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -124,15 +122,14 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	// Check password
 	if err := password.CheckPassword(user.Password, req.Password); err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Invalid credentials",
 		})
 	}
 
-	// Generate PASETO token
-	token, err := auth.GenerateToken(user)
+	// 🔒 Generate PASETO token (valid for 4 hours)
+	token, err := middleware.EncodeWithRoleHours(user.Role, user.Username, 4)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to generate token",

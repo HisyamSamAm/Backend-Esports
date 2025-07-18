@@ -10,8 +10,8 @@ import (
 )
 
 // Database configuration
-var DBName = "turnamen_esport"
-var MongoString string = os.Getenv("MONGOSTRING")
+var DBName = "esport_app"
+var MongoString string = os.Getenv("MONGO_WEBSERVICES") // Use environment variable for MongoDB connection string
 
 // Global database instance
 var DB *mongo.Database

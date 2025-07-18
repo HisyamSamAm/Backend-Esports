@@ -5,6 +5,7 @@ import (
 	"embeck/router"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -52,6 +53,14 @@ func main() {
 	if db == nil {
 		log.Fatal("Failed to connect to database")
 	}
+
+	// Setup Cors
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     strings.Join(config.GetAllowedOrigins(), ","),
+		AllowHeaders:    "Origin, Content-Type, Accept, Authorization",
+		AllowCredentials: true,
+		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
+	}))
 
 	// Setup routes
 	router.SetupRoutes(app)

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"embeck/pkg/auth"
+	auth "embeck/pkg/auth"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
