@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// CreateUser creates a new user
+// CreateUser creates a new user with dual sync support
 func CreateUser(ctx context.Context, user model.User) (insertedID interface{}, err error) {
 	// Check if username already exists
 	usernameFilter := bson.M{"username": user.Username}
@@ -40,7 +40,7 @@ func CreateUser(ctx context.Context, user model.User) (insertedID interface{}, e
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 
-	// Insert user
+	// Insert user with dual sync capability
 	insertResult, err := config.UsersCollection.InsertOne(ctx, user)
 	if err != nil {
 		fmt.Printf("CreateUser - Insert: %v\n", err)

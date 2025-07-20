@@ -30,6 +30,13 @@ type LoginRequest struct {
 	Password string `json:"password" validate:"required" example:"passwordAman123" description:"Password user"`
 }
 
+// UpdateUserRequest represents request body for updating user data
+type UpdateUserRequest struct {
+	Username string `json:"username,omitempty" validate:"omitempty,min=3,max=50" example:"usernameUpdate" description:"Nama pengguna baru (opsional)"`
+	Email    string `json:"email,omitempty" validate:"omitempty,email" example:"email.update@example.com" description:"Email baru (opsional)"`
+	Role     string `json:"role,omitempty" validate:"omitempty,oneof=user admin" example:"admin" description:"Role baru: user atau admin (opsional)"`
+}
+
 // AuthResponse represents response for authentication operations
 type AuthResponse struct {
 	Message string `json:"message" example:"Login successful" description:"Pesan konfirmasi"`
@@ -42,6 +49,13 @@ type AuthResponse struct {
 type UserResponse struct {
 	Message string `json:"message" example:"User registered successfully" description:"Pesan konfirmasi"`
 	UserID  string `json:"user_id,omitempty" example:"64f123abc456def789012345" description:"ID user yang dibuat"`
+}
+
+// UsersListResponse represents response for get all users
+type UsersListResponse struct {
+	Message string        `json:"message" example:"Users retrieved successfully" description:"Pesan konfirmasi"`
+	Data    []UserProfile `json:"data" description:"Daftar semua user"`
+	Total   int           `json:"total" example:"5" description:"Total jumlah user"`
 }
 
 // UserProfile represents user profile data (without password)

@@ -456,6 +456,23 @@ definitions:
           $ref: '#/definitions/model.TeamBasicInfo'
         type: array
     type: object
+  model.UpdateUserRequest:
+    properties:
+      email:
+        example: email.update@example.com
+        type: string
+      role:
+        enum:
+        - user
+        - admin
+        example: admin
+        type: string
+      username:
+        example: usernameUpdate
+        maxLength: 50
+        minLength: 3
+        type: string
+    type: object
   model.UploadResponse:
     properties:
       file_name:
@@ -494,6 +511,19 @@ definitions:
       user_id:
         example: 64f123abc456def789012345
         type: string
+    type: object
+  model.UsersListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.UserProfile'
+        type: array
+      message:
+        example: Users retrieved successfully
+        type: string
+      total:
+        example: 5
+        type: integer
     type: object
 info:
   contact:
@@ -664,36 +694,59 @@ paths:
     get:
       consumes:
       - application/json
-      - application/json
-      description: Menghapus pemain dari database
+      description: Mendapatkan daftar semua pemain Mobile Legends
       produces:
-      - application/json
       - application/json
       responses:
         "200":
-          description: OK
+          description: Daftar semua pemain
           schema:
             items:
               $ref: '#/definitions/model.Player'
             type: array
-        "400":
-          description: Bad Request
+        "500":
+          description: Internal server error
           schema:
             additionalProperties: true
             type: object
-        "404":
-          description: Not Found
+      summary: Get All Players
+      tags:
+      - Players
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan pemain baru ke database
+      parameters:
+      - description: Player data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.PlayerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Player berhasil dibuat
+          schema:
+            $ref: '#/definitions/model.PlayerResponse'
+        "400":
+          description: Request data tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Player sudah ada
           schema:
             additionalProperties: true
             type: object
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             additionalProperties: true
             type: object
-      summary: Delete Player
+      summary: Create New Player
       tags:
-      - Players
       - Players
   /api/admin/players/{id}:
     delete:
@@ -702,6 +755,7 @@ paths:
       description: Menghapus pemain dari database
       parameters:
       - description: Player ID
+        example: '"64f123abc456def789012345"'
         in: path
         name: id
         required: true
@@ -710,16 +764,22 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Player berhasil dihapus
           schema:
-            $ref: '#/definitions/model.PlayerResponse'
+            additionalProperties: true
+            type: object
         "400":
-          description: Bad Request
+          description: ID tidak valid
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Player tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
           schema:
             additionalProperties: true
             type: object
@@ -732,6 +792,7 @@ paths:
       description: Mendapatkan detail pemain berdasarkan ID
       parameters:
       - description: Player ID
+        example: '"64f123abc456def789012345"'
         in: path
         name: id
         required: true
@@ -740,20 +801,67 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Detail pemain
           schema:
             $ref: '#/definitions/model.Player'
         "400":
-          description: Bad Request
+          description: ID tidak valid
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Player tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
           schema:
             additionalProperties: true
             type: object
       summary: Get Player By ID
+      tags:
+      - Players
+    put:
+      consumes:
+      - application/json
+      description: Memperbarui detail pemain
+      parameters:
+      - description: Player ID
+        example: '"64f123abc456def789012345"'
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Player data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.PlayerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Player berhasil diupdate
+          schema:
+            $ref: '#/definitions/model.PlayerResponse'
+        "400":
+          description: Request data tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Player tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update Player
       tags:
       - Players
   /api/admin/teams:
@@ -1216,6 +1324,195 @@ paths:
       summary: Update tournament
       tags:
       - Tournament Management (Admin)
+  /api/admin/users:
+    get:
+      consumes:
+      - application/json
+      description: Mendapatkan daftar semua user (Admin only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Daftar semua user berhasil diambil
+          schema:
+            $ref: '#/definitions/model.UsersListResponse'
+        "401":
+          description: Unauthorized - Token tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden - Hanya admin yang dapat mengakses
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get All Users
+      tags:
+      - Users Management
+  /api/admin/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Menghapus user dari sistem (Admin only)
+      parameters:
+      - description: User ID
+        example: '"64f123abc456def789012345"'
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User berhasil dihapus
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: ID tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized - Token tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden - Hanya admin yang dapat mengakses
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: User tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete User
+      tags:
+      - Users Management
+    get:
+      consumes:
+      - application/json
+      description: Mendapatkan detail user berdasarkan ID (Admin only)
+      parameters:
+      - description: User ID
+        example: '"64f123abc456def789012345"'
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User detail berhasil diambil
+          schema:
+            $ref: '#/definitions/model.UserProfile'
+        "400":
+          description: ID tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized - Token tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden - Hanya admin yang dapat mengakses
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: User tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get User by ID
+      tags:
+      - Users Management
+    put:
+      consumes:
+      - application/json
+      description: Mengupdate data user (Admin only)
+      parameters:
+      - description: User ID
+        example: '"64f123abc456def789012345"'
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data user yang akan diupdate
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User berhasil diupdate
+          schema:
+            $ref: '#/definitions/model.UserProfile'
+        "400":
+          description: Request data tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized - Token tidak valid
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden - Hanya admin yang dapat mengakses
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: User tidak ditemukan
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Username atau email sudah digunakan
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update User
+      tags:
+      - Users Management
   /api/auth/login:
     post:
       consumes:
@@ -1321,115 +1618,6 @@ paths:
       summary: Register New User
       tags:
       - Authentication
-  /api/players:
-    post:
-      consumes:
-      - application/json
-      description: Menambahkan pemain baru ke database
-      parameters:
-      - description: Player data
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/model.PlayerRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/model.PlayerResponse'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-        "409":
-          description: Conflict
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Create New Player
-      tags:
-      - Players
-  /api/players/{id}:
-    delete:
-      consumes:
-      - application/json
-      - application/json
-      description: Menghapus pemain dari database
-      parameters:
-      - description: Player ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.Player'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Delete Player
-      tags:
-      - Players
-      - Players
-    put:
-      consumes:
-      - application/json
-      description: Memperbarui detail pemain
-      parameters:
-      - description: Player ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Player data
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/model.PlayerRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.PlayerResponse'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Update Player
-      tags:
-      - Players
   /api/tickets:
     post:
       consumes:

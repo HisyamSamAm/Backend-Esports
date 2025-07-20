@@ -9,22 +9,13 @@ import (
 )
 
 // GetAllPlayers godoc
-// @Summary Get All // DeletePlayer godoc
-// @Summary Delete Player
-// @Description Menghapus pemain dari database
+// @Summary Get All Players
+// @Description Mendapatkan daftar semua pemain Mobile Legends
 // @Tags Players
 // @Accept json
 // @Produce json
-// @Param id path string true "Player ID"
-// @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} map[string]interface{}
-// @Failure 404 {object} map[string]interface{}
-// @Router /api/players/{id} [delete] @Description Mendapatkan daftar semua pemain Mobile Legends
-// @Tags Players
-// @Accept json
-// @Produce json
-// @Success 200 {array} model.Player
-// @Failure 500 {object} map[string]interface{}
+// @Success 200 {array} model.Player "Daftar semua pemain"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /api/admin/players [get]
 func GetAllPlayers(c *fiber.Ctx) error {
 	players, err := repository.GetAllPlayers(c.Context())
@@ -43,10 +34,11 @@ func GetAllPlayers(c *fiber.Ctx) error {
 // @Tags Players
 // @Accept json
 // @Produce json
-// @Param id path string true "Player ID"
-// @Success 200 {object} model.Player
-// @Failure 400 {object} map[string]interface{}
-// @Failure 404 {object} map[string]interface{}
+// @Param id path string true "Player ID" example("64f123abc456def789012345")
+// @Success 200 {object} model.Player "Detail pemain"
+// @Failure 400 {object} map[string]interface{} "ID tidak valid"
+// @Failure 404 {object} map[string]interface{} "Player tidak ditemukan"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /api/admin/players/{id} [get]
 func GetPlayerByID(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -74,10 +66,11 @@ func GetPlayerByID(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param request body model.PlayerRequest true "Player data"
-// @Success 201 {object} model.PlayerResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 409 {object} map[string]interface{}
-// @Router /api/players [post]
+// @Success 201 {object} model.PlayerResponse "Player berhasil dibuat"
+// @Failure 400 {object} map[string]interface{} "Request data tidak valid"
+// @Failure 409 {object} map[string]interface{} "Player sudah ada"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
+// @Router /api/admin/players [post]
 func CreatePlayer(c *fiber.Ctx) error {
 	var req model.PlayerRequest
 
@@ -121,12 +114,13 @@ func CreatePlayer(c *fiber.Ctx) error {
 // @Tags Players
 // @Accept json
 // @Produce json
-// @Param id path string true "Player ID"
+// @Param id path string true "Player ID" example("64f123abc456def789012345")
 // @Param request body model.PlayerRequest true "Player data"
-// @Success 200 {object} model.PlayerResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 404 {object} map[string]interface{}
-// @Router /api/players/{id} [put]
+// @Success 200 {object} model.PlayerResponse "Player berhasil diupdate"
+// @Failure 400 {object} map[string]interface{} "Request data tidak valid"
+// @Failure 404 {object} map[string]interface{} "Player tidak ditemukan"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
+// @Router /api/admin/players/{id} [put]
 func UpdatePlayer(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var req model.PlayerRequest
@@ -170,10 +164,11 @@ func UpdatePlayer(c *fiber.Ctx) error {
 // @Tags Players
 // @Accept json
 // @Produce json
-// @Param id path string true "Player ID"
-// @Success 200 {object} model.PlayerResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 404 {object} map[string]interface{}
+// @Param id path string true "Player ID" example("64f123abc456def789012345")
+// @Success 200 {object} map[string]interface{} "Player berhasil dihapus"
+// @Failure 400 {object} map[string]interface{} "ID tidak valid"
+// @Failure 404 {object} map[string]interface{} "Player tidak ditemukan"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /api/admin/players/{id} [delete]
 func DeletePlayer(c *fiber.Ctx) error {
 	id := c.Params("id")

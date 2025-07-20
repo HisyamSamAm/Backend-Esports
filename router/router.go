@@ -67,6 +67,13 @@ func SetupRoutes(app *fiber.App) {
 
 	// Legacy admin routes (redirected to main routes for compatibility)
 	admin := api.Group("/admin")
+
+	// User management routes (admin only)
+	admin.Get("/users", handler.GetAllUsers)
+	admin.Get("/users/:id", handler.GetUserByID)
+	admin.Put("/users/:id", handler.UpdateUser)
+	admin.Delete("/users/:id", handler.DeleteUser)
+
 	admin.Get("/players", handler.GetAllPlayers)
 	admin.Get("/players/:id", handler.GetPlayerByID)
 	admin.Post("/players", handler.CreatePlayer)
