@@ -39,10 +39,12 @@ type UpdateUserRequest struct {
 
 // AuthResponse represents response for authentication operations
 type AuthResponse struct {
-	Message string `json:"message" example:"Login successful" description:"Pesan konfirmasi"`
-	Token   string `json:"token,omitempty" example:"v2.local.xxx" description:"PASETO token untuk autentikasi"`
-	Role    string `json:"role,omitempty" example:"user" description:"Peran user"`
-	UserID  string `json:"user_id,omitempty" example:"64f123abc456def789012345" description:"ID user yang login"`
+	Message  string `json:"message" example:"Login successful" description:"Pesan konfirmasi"`
+	Token    string `json:"token,omitempty" example:"v2.local.xxx" description:"PASETO token untuk autentikasi"`
+	Role     string `json:"role,omitempty" example:"user" description:"Peran user"`
+	UserID   string `json:"user_id,omitempty" example:"64f123abc456def789012345" description:"ID user yang login"`
+	Username string `json:"username,omitempty" example:"userbaru123" description:"Nama pengguna"`
+	Email    string `json:"email,omitempty" example:"user.example@example.com" description:"Alamat email user"`
 }
 
 // UserResponse represents response for user operations (without sensitive data)

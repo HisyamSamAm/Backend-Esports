@@ -137,10 +137,12 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(model.AuthResponse{
-		Message: "Login successful",
-		Token:   token,
-		Role:    user.Role,
-		UserID:  user.ID.Hex(),
+		Message:  "Login successful",
+		Token:    token,
+		Role:     user.Role,
+		UserID:   user.ID.Hex(),
+		Username: user.Username,
+		Email:    user.Email,
 	})
 }
 
