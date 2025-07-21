@@ -2,6 +2,7 @@ package auth
 
 import (
 	"embeck/model"
+	"encoding/hex"
 	"errors"
 	"os"
 	"time"
@@ -9,127 +10,99 @@ import (
 	"aidanwoods.dev/go-paseto"
 )
 
-var (
-	secretKey = []byte(getSecretKey())
-)
-
-// getSecretKey returns the secret key from environment or default
-func getSecretKey() string {
-	key := os.Getenv("PASETO_SECRET_KEY")
-	if key == "" {
-		// Default key for development - CHANGE THIS IN PRODUCTION!
-		key = "embeck-secret-key-change-this-in-production-32-chars"
-	}
-	// Ensure key is exactly 32 bytes for PASETO v2
-	if len(key) < 32 {
-		key = key + "000000000000000000000000000000000000"
-	}
-	return key[:32]
-}
-
-// GenerateToken creates a new PASETO token for a user
+// GenerateToken creates a new PASETO token for a user using public-key signing.
 func GenerateToken(user *model.User) (string, error) {
-	// Create a new PASETO token
-	token := paseto.NewToken()
-
-	// Set token to be a local token (encrypted)
-	token.SetIssuedAt(time.Now())
-	token.SetExpiration(time.Now().Add(24 * time.Hour)) // Token expires in 24 hours
-	token.SetNotBefore(time.Now())
-
-	// Set custom claims
-	claims := model.TokenClaims{
-		UserID:   user.ID.Hex(),
-		Username: user.Username,
-		Email:    user.Email,
-		Role:     user.Role,
-		IssuedAt: time.Now().Unix(),
-		ExpireAt: time.Now().Add(24 * time.Hour).Unix(),
+	// Get the hex-encoded private key from the environment variables.
+	privateKeyHex := os.Getenv("PRIVATE_KEY")
+	if privateKeyHex == "" {
+		return "", errors.New("PRIVATE_KEY environment variable not set")
 	}
 
-	token.SetString("user_id", claims.UserID)
-	token.SetString("username", claims.Username)
-	token.SetString("email", claims.Email)
-	token.SetString("role", claims.Role)
-
-	// Create symmetric key from secret
-	symmetricKey, err := paseto.V4SymmetricKeyFromBytes(secretKey)
+	// Decode the hex string into bytes.
+	privateKeyBytes, err := hex.DecodeString(privateKeyHex)
 	if err != nil {
-		return "", err
+		return "", errors.New("failed to decode private key")
 	}
 
-	// Encrypt the token
-	encrypted := token.V4Encrypt(symmetricKey, nil)
+	// Create a Paseto V4 asymmetric private key from the decoded bytes.
+	privateKey, err := paseto.NewV4AsymmetricSecretKeyFromBytes(privateKeyBytes)
+	if err != nil {
+		return "", errors.New("failed to create paseto private key")
+	}
 
-	return encrypted, nil
+	// Create a new token.
+	token := paseto.NewToken()
+	token.SetIssuedAt(time.Now())
+	token.SetNotBefore(time.Now())
+	token.SetExpiration(time.Now().Add(24 * time.Hour)) // Token is valid for 24 hours.
+
+	// Add custom claims to the token.
+	token.SetString("user_id", user.ID.Hex())
+	token.SetString("username", user.Username)
+	token.SetString("email", user.Email)
+	token.SetString("role", user.Role)
+
+	// Sign the token with the private key to create a public token.
+	signedToken := token.V4Sign(privateKey, nil)
+
+	return signedToken, nil
 }
 
-// ValidateToken validates and parses a PASETO token
+// ValidateToken validates and parses a PASETO token using the public key.
 func ValidateToken(tokenString string) (*model.TokenClaims, error) {
-	// Create symmetric key from secret
-	symmetricKey, err := paseto.V4SymmetricKeyFromBytes(secretKey)
+	// Get the hex-encoded public key from the environment variables.
+	publicKeyHex := os.Getenv("PUBLIC_KEY")
+	if publicKeyHex == "" {
+		return nil, errors.New("PUBLIC_KEY environment variable not set")
+	}
+
+	// Decode the hex string into bytes.
+	publicKeyBytes, err := hex.DecodeString(publicKeyHex)
 	if err != nil {
+		return nil, errors.New("failed to decode public key")
+	}
+
+	// Create a Paseto V4 asymmetric public key from the decoded bytes.
+	publicKey, err := paseto.NewV4AsymmetricPublicKeyFromBytes(publicKeyBytes)
+	if err != nil {
+		return nil, errors.New("failed to create paseto public key")
+	}
+
+	// Create a new Paseto parser to verify the token.
+	parser := paseto.NewParser()
+	// Add rules to validate standard claims (e.g., token has not expired).
+	parser.AddRule(paseto.NotExpired())
+
+	// Parse and validate the token using the public key.
+	token, err := parser.ParseV4Public(publicKey, tokenString, nil)
+	if err != nil {
+		return nil, errors.New("invalid token or signature")
+	}
+
+	// Extract custom claims from the token.
+	claims := &model.TokenClaims{}
+	if err := token.Get("user_id", &claims.UserID); err != nil {
+		return nil, err
+	}
+	if err := token.Get("username", &claims.Username); err != nil {
+		return nil, err
+	}
+	if err := token.Get("email", &claims.Email); err != nil {
+		return nil, err
+	}
+	if err := token.Get("role", &claims.Role); err != nil {
 		return nil, err
 	}
 
-	// Parse the token
-	parser := paseto.NewParser()
-	token, err := parser.ParseV4Local(symmetricKey, tokenString, nil)
-	if err != nil {
-		return nil, errors.New("invalid token format")
-	}
-
-	// Check if token is expired
-	expiration, err := token.GetExpiration()
-	if err != nil {
-		return nil, errors.New("invalid expiration in token")
-	}
-	if time.Now().After(expiration) {
-		return nil, errors.New("token has expired")
-	}
-
-	// Check if token is not yet valid
-	notBefore, err := token.GetNotBefore()
-	if err != nil {
-		return nil, errors.New("invalid not_before in token")
-	}
-	if time.Now().Before(notBefore) {
-		return nil, errors.New("token not yet valid")
-	}
-
-	// Extract claims
-	claims := &model.TokenClaims{}
-
-	userID, err := token.GetString("user_id")
-	if err != nil {
-		return nil, errors.New("invalid user_id in token")
-	}
-	claims.UserID = userID
-
-	username, err := token.GetString("username")
-	if err != nil {
-		return nil, errors.New("invalid username in token")
-	}
-	claims.Username = username
-
-	email, err := token.GetString("email")
-	if err != nil {
-		return nil, errors.New("invalid email in token")
-	}
-	claims.Email = email
-
-	role, err := token.GetString("role")
-	if err != nil {
-		return nil, errors.New("invalid role in token")
-	}
-	claims.Role = role
-
+	// Extract standard time-based claims.
 	issuedAt, err := token.GetIssuedAt()
 	if err == nil {
 		claims.IssuedAt = issuedAt.Unix()
 	}
-
-	claims.ExpireAt = expiration.Unix()
+	expiration, err := token.GetExpiration()
+	if err == nil {
+		claims.ExpireAt = expiration.Unix()
+	}
 
 	return claims, nil
 }

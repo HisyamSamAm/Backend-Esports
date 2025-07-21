@@ -22,6 +22,7 @@ var TournamentsCollection *mongo.Collection
 var TeamsCollection *mongo.Collection
 var PlayersCollection *mongo.Collection
 var MatchesCollection *mongo.Collection
+var UserTicketsCollection *mongo.Collection
 var TicketsCollection *mongo.Collection
 var TransactionsCollection *mongo.Collection
 
@@ -51,6 +52,7 @@ func MongoConnect(dbname string) (db *mongo.Database) {
 	TeamsCollection = DB.Collection("teams")
 	PlayersCollection = DB.Collection("players")
 	MatchesCollection = DB.Collection("matches")
+	UserTicketsCollection = DB.Collection("user_tickets")
 	TicketsCollection = DB.Collection("tickets")
 	TransactionsCollection = DB.Collection("transactions")
 

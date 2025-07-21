@@ -1941,6 +1941,10 @@ const docTemplate = `{
         "model.AuthResponse": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "user.example@example.com"
+                },
                 "message": {
                     "type": "string",
                     "example": "Login successful"
@@ -1956,6 +1960,10 @@ const docTemplate = `{
                 "user_id": {
                     "type": "string",
                     "example": "64f123abc456def789012345"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "userbaru123"
                 }
             }
         },
@@ -2299,6 +2307,12 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "string"
+                    }
+                },
+                "members_details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlayerDetails"
                     }
                 },
                 "team_name": {

@@ -2,6 +2,9 @@ basePath: /
 definitions:
   model.AuthResponse:
     properties:
+      email:
+        example: user.example@example.com
+        type: string
       message:
         example: Login successful
         type: string
@@ -13,6 +16,9 @@ definitions:
         type: string
       user_id:
         example: 64f123abc456def789012345
+        type: string
+      username:
+        example: userbaru123
         type: string
     type: object
   model.ErrorResponse:
@@ -244,6 +250,10 @@ definitions:
       members:
         items:
           type: string
+        type: array
+      members_details:
+        items:
+          $ref: '#/definitions/model.PlayerDetails'
         type: array
       team_name:
         type: string

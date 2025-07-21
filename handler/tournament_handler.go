@@ -122,7 +122,7 @@ func CreateTournament(c *fiber.Ctx) error {
 // @Description Get all tournaments with admin details
 // @Tags Tournament Management (Admin)
 // @Produce json
-// @Success 200 {array} model.Tournament
+// @Success 200 {array} model.TournamentWithDetails
 // @Failure 500 {object} model.ErrorResponse
 // @Router /api/admin/tournaments [get]
 // @Security BearerAuth
@@ -152,7 +152,8 @@ func GetAllTournaments(c *fiber.Ctx) error {
 func GetTournamentByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	tournament, err := repository.GetTournamentByID(id)
+	// MEMASTIKAN FUNGSI INI MENGEMBALIKAN DETAIL LENGKAP
+	tournament, err := repository.GetTournamentWithDetailsByID(id)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return c.Status(fiber.StatusNotFound).JSON(model.ErrorResponse{

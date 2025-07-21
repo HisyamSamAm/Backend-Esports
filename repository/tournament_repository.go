@@ -23,18 +23,56 @@ func CreateTournament(tournament *model.Tournament) (*mongo.InsertOneResult, err
 	return result, err
 }
 
-// GetAllTournaments retrieves all tournaments (admin view)
-func GetAllTournaments() ([]model.Tournament, error) {
+// GetAllTournaments retrieves all tournaments (admin view) with populated team details
+func GetAllTournaments() ([]model.TournamentWithDetails, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	cursor, err := config.TournamentsCollection.Find(ctx, bson.M{})
+	pipeline := []bson.M{
+		{
+			"$lookup": bson.M{
+				"from":         "teams",
+				"localField":   "teams_participating",
+				"foreignField": "_id",
+				"as":           "team_details",
+			},
+		},
+		{
+			"$project": bson.M{
+				"_id":                1,
+				"name":               1,
+				"description":        1,
+				"start_date":         1,
+				"end_date":           1,
+				"prize_pool":         1,
+				"rules_document_url": 1,
+				"status":             1,
+				"created_by":         1,
+				"created_at":         1,
+				"updated_at":         1,
+				"teams_participating": bson.M{
+					"$map": bson.M{
+						"input": "$team_details",
+						"as":    "team",
+						"in": bson.M{
+							"_id":       "$$team._id",
+							"team_name": "$$team.team_name",
+							"logo_url":  "$$team.logo_url",
+						},
+					},
+				},
+				"matches": []bson.M{}, // Return empty array for matches to match the struct
+			},
+		},
+	}
+
+	cursor, err := config.TournamentsCollection.Aggregate(ctx, pipeline)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
 
-	var tournaments []model.Tournament
+	var tournaments []model.TournamentWithDetails
 	if err = cursor.All(ctx, &tournaments); err != nil {
 		return nil, err
 	}

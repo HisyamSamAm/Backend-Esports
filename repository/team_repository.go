@@ -74,6 +74,21 @@ func GetAllTeamsWithDetails(ctx context.Context) ([]model.TeamWithDetails, error
 			},
 		},
 		{
+			"$lookup": bson.M{
+				"from":         "players",
+				"localField":   "members",
+				"foreignField": "_id",
+				"as":           "members_details",
+			},
+		},
+		{
+			"$addFields": bson.M{
+				"captain_details": bson.M{
+					"$arrayElemAt": []interface{}{"$captain_details", 0},
+				},
+			},
+		},
+		{
 			"$project": bson.M{
 				"_id":        1,
 				"team_name":  1,
@@ -83,21 +98,24 @@ func GetAllTeamsWithDetails(ctx context.Context) ([]model.TeamWithDetails, error
 				"created_at": 1,
 				"updated_at": 1,
 				"captain_details": bson.M{
+					"_id":         "$captain_details._id",
+					"name":        "$captain_details.name",
+					"ml_nickname": "$captain_details.ml_nickname",
+					"ml_id":       "$captain_details.ml_id",
+					"status":      "$captain_details.status",
+				},
+				"members_details": bson.M{
 					"$map": bson.M{
-						"input": "$captain_details",
-						"as":    "captain",
+						"input": "$members_details",
+						"as":    "member",
 						"in": bson.M{
-							"_id":         "$$captain._id",
-							"ml_nickname": "$$captain.ml_nickname",
+							"_id":         "$$member._id",
+							"name":        "$$member.name",
+							"ml_nickname": "$$member.ml_nickname",
+							"ml_id":       "$$member.ml_id",
+							"status":      "$$member.status",
 						},
 					},
-				},
-			},
-		},
-		{
-			"$addFields": bson.M{
-				"captain_details": bson.M{
-					"$arrayElemAt": []interface{}{"$captain_details", 0},
 				},
 			},
 		},
@@ -139,6 +157,21 @@ func GetTeamByIDWithDetails(ctx context.Context, id string) (*model.TeamWithDeta
 			},
 		},
 		{
+			"$lookup": bson.M{
+				"from":         "players",
+				"localField":   "members",
+				"foreignField": "_id",
+				"as":           "members_details",
+			},
+		},
+		{
+			"$addFields": bson.M{
+				"captain_details": bson.M{
+					"$arrayElemAt": []interface{}{"$captain_details", 0},
+				},
+			},
+		},
+		{
 			"$project": bson.M{
 				"_id":        1,
 				"team_name":  1,
@@ -148,21 +181,24 @@ func GetTeamByIDWithDetails(ctx context.Context, id string) (*model.TeamWithDeta
 				"created_at": 1,
 				"updated_at": 1,
 				"captain_details": bson.M{
+					"_id":         "$captain_details._id",
+					"name":        "$captain_details.name",
+					"ml_nickname": "$captain_details.ml_nickname",
+					"ml_id":       "$captain_details.ml_id",
+					"status":      "$captain_details.status",
+				},
+				"members_details": bson.M{
 					"$map": bson.M{
-						"input": "$captain_details",
-						"as":    "captain",
+						"input": "$members_details",
+						"as":    "member",
 						"in": bson.M{
-							"_id":         "$$captain._id",
-							"ml_nickname": "$$captain.ml_nickname",
+							"_id":         "$$member._id",
+							"name":        "$$member.name",
+							"ml_nickname": "$$member.ml_nickname",
+							"ml_id":       "$$member.ml_id",
+							"status":      "$$member.status",
 						},
 					},
-				},
-			},
-		},
-		{
-			"$addFields": bson.M{
-				"captain_details": bson.M{
-					"$arrayElemAt": []interface{}{"$captain_details", 0},
 				},
 			},
 		},

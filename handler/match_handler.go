@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -161,7 +162,7 @@ func GetAllMatches(c *fiber.Ctx) error {
 func GetMatchByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	match, err := repository.GetMatchByID(c.Context(), id)
+	match, err := repository.GetMatchWithDetailsByID(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
@@ -199,94 +200,79 @@ func UpdateMatch(c *fiber.Ctx) error {
 		})
 	}
 
-	// Create update model (only update non-empty fields)
-	update := model.Match{}
+	update := bson.M{}
 
 	if req.TournamentID != "" {
 		tournamentObjID, err := primitive.ObjectIDFromHex(req.TournamentID)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "Invalid tournament_id format",
-			})
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid tournament_id format"})
 		}
-		update.TournamentID = tournamentObjID
+		update["tournament_id"] = tournamentObjID
 	}
 
 	if req.TeamAID != "" {
 		teamAObjID, err := primitive.ObjectIDFromHex(req.TeamAID)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "Invalid team_a_id format",
-			})
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid team_a_id format"})
 		}
-		update.TeamAID = teamAObjID
+		update["team_a_id"] = teamAObjID
 	}
 
 	if req.TeamBID != "" {
 		teamBObjID, err := primitive.ObjectIDFromHex(req.TeamBID)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "Invalid team_b_id format",
-			})
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid team_b_id format"})
 		}
-		update.TeamBID = teamBObjID
+		update["team_b_id"] = teamBObjID
 	}
 
 	// Validate teams are different if both are provided
 	if req.TeamAID != "" && req.TeamBID != "" && req.TeamAID == req.TeamBID {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Team A and Team B must be different",
-		})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Team A and Team B must be different"})
 	}
 
 	if !req.MatchDate.IsZero() {
-		update.MatchDate = req.MatchDate
+		update["match_date"] = req.MatchDate
 	}
 
 	if req.MatchTime != "" {
-		update.MatchTime = req.MatchTime
+		update["match_time"] = req.MatchTime
 	}
 
 	if req.Location != "" {
-		update.Location = req.Location
+		update["location"] = req.Location
 	}
 
 	if req.Round != "" {
-		update.Round = req.Round
+		update["round"] = req.Round
 	}
 
 	if req.ResultTeamAScore != nil {
-		update.ResultTeamAScore = req.ResultTeamAScore
+		update["result_team_a_score"] = req.ResultTeamAScore
 	}
 
 	if req.ResultTeamBScore != nil {
-		update.ResultTeamBScore = req.ResultTeamBScore
+		update["result_team_b_score"] = req.ResultTeamBScore
 	}
 
 	if req.WinnerTeamID != "" {
 		winnerObjID, err := primitive.ObjectIDFromHex(req.WinnerTeamID)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "Invalid winner_team_id format",
-			})
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid winner_team_id format"})
 		}
-		update.WinnerTeamID = &winnerObjID
+		update["winner_team_id"] = &winnerObjID
 	}
 
 	if req.Status != "" {
-		// Validate status
-		validStatuses := map[string]bool{
-			"scheduled": true,
-			"ongoing":   true,
-			"completed": true,
-			"cancelled": true,
-		}
+		validStatuses := map[string]bool{"scheduled": true, "ongoing": true, "completed": true, "cancelled": true}
 		if !validStatuses[req.Status] {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "Status must be 'scheduled', 'ongoing', 'completed', or 'cancelled'",
-			})
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Status must be 'scheduled', 'ongoing', 'completed', or 'cancelled'"})
 		}
-		update.Status = req.Status
+		update["status"] = req.Status
+	}
+
+	if len(update) == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "No fields to update"})
 	}
 
 	_, err := repository.UpdateMatch(c.Context(), id, update)

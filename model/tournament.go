@@ -62,28 +62,28 @@ type TournamentWithDetails struct {
 	PrizePool          string             `bson:"prize_pool" json:"prize_pool"`
 	RulesDocumentURL   string             `bson:"rules_document_url,omitempty" json:"rules_document_url,omitempty"`
 	Status             string             `bson:"status" json:"status"`
-	TeamsParticipating []TeamBasicInfo    `json:"teams_participating"`
-	Matches            []MatchBasicInfo   `json:"matches"`
+	TeamsParticipating []TeamBasicInfo    `bson:"teams_participating,omitempty" json:"teams_participating"`
+	Matches            []MatchBasicInfo   `bson:"matches,omitempty" json:"matches"`
 }
 
 // TeamBasicInfo represents minimal team info for tournament details
 type TeamBasicInfo struct {
-	ID       primitive.ObjectID `json:"_id"`
-	TeamName string             `json:"team_name"`
-	LogoURL  string             `json:"logo_url,omitempty"`
+	ID       primitive.ObjectID `json:"_id" bson:"_id"`
+	TeamName string             `json:"team_name" bson:"team_name"`
+	LogoURL  string             `json:"logo_url,omitempty" bson:"logo_url,omitempty"`
 }
 
 // MatchBasicInfo represents minimal match info for tournament details
 type MatchBasicInfo struct {
-	ID               primitive.ObjectID  `json:"_id"`
-	MatchDate        time.Time           `json:"match_date"`
-	MatchTime        string              `json:"match_time"`
-	Location         string              `json:"location"`
-	Round            string              `json:"round"`
-	TeamA            TeamBasicInfo       `json:"team_a"`
-	TeamB            TeamBasicInfo       `json:"team_b"`
-	ResultTeamAScore *int                `json:"result_team_a_score"`
-	ResultTeamBScore *int                `json:"result_team_b_score"`
-	WinnerTeamID     *primitive.ObjectID `json:"winner_team_id"`
-	Status           string              `json:"status"`
+	ID               primitive.ObjectID  `bson:"_id" json:"_id"`
+	MatchDate        time.Time           `bson:"match_date" json:"match_date"`
+	MatchTime        string              `bson:"match_time" json:"match_time"`
+	Location         string              `bson:"location" json:"location"`
+	Round            string              `bson:"round" json:"round"`
+	TeamA            TeamBasicInfo       `bson:"team_a" json:"team_a"`
+	TeamB            TeamBasicInfo       `bson:"team_b" json:"team_b"`
+	ResultTeamAScore *int                `bson:"result_team_a_score,omitempty" json:"result_team_a_score"`
+	ResultTeamBScore *int                `bson:"result_team_b_score,omitempty" json:"result_team_b_score"`
+	WinnerTeamID     *primitive.ObjectID `bson:"winner_team_id,omitempty" json:"winner_team_id"`
+	Status           string              `bson:"status" json:"status"`
 }

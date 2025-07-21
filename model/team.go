@@ -40,11 +40,15 @@ type TeamWithDetails struct {
 	LogoURL        string               `bson:"logo_url,omitempty" json:"logo_url,omitempty"`
 	CreatedAt      time.Time            `bson:"created_at" json:"created_at"`
 	UpdatedAt      time.Time            `bson:"updated_at" json:"updated_at"`
-	CaptainDetails *PlayerDetails       `json:"captain_details,omitempty"`
+	CaptainDetails *PlayerDetails       `json:"captain_details,omitempty" bson:"captain_details,omitempty"`
+	MembersDetails []PlayerDetails      `json:"members_details,omitempty" bson:"members_details,omitempty"`
 }
 
 // PlayerDetails represents minimal player info for team details
 type PlayerDetails struct {
-	ID         primitive.ObjectID `json:"_id"`
-	MLNickname string             `json:"ml_nickname"`
+	ID         primitive.ObjectID `json:"_id" bson:"_id"`
+	MLNickname string             `json:"ml_nickname" bson:"ml_nickname"`
+	Name       string             `json:"name,omitempty" bson:"name,omitempty"`
+	MLID       string             `json:"ml_id,omitempty" bson:"ml_id,omitempty"`
+	Status     string             `json:"status,omitempty" bson:"status,omitempty"`
 }

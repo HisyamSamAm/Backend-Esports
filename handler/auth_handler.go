@@ -1,13 +1,14 @@
 package handler
 
 import (
-	"embeck/config/middleware"
 	"embeck/model"
 	"embeck/pkg/password"
 	"embeck/repository"
 	"regexp"
 	"strings"
 	"time"
+
+	"embeck/pkg/auth"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -128,8 +129,8 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	// 🔒 Generate PASETO token (valid for 4 hours)
-	token, err := middleware.EncodeWithRoleHours(user.Role, user.Username, 4)
+	// 🔒 Generate PASETO token (valid for 24 hours as per auth pkg)
+	token, err := auth.GenerateToken(user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to generate token",

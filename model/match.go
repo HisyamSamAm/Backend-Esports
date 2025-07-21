@@ -61,6 +61,6 @@ type MatchWithDetails struct {
 	Status           string              `bson:"status" json:"status"`
 	CreatedAt        time.Time           `bson:"created_at" json:"created_at"`
 	UpdatedAt        time.Time           `bson:"updated_at" json:"updated_at"`
-	TeamA            *TeamBasicInfo      `json:"team_a,omitempty"`
-	TeamB            *TeamBasicInfo      `json:"team_b,omitempty"`
+	TeamA            *TeamBasicInfo      `json:"team_a,omitempty" bson:"team_a,omitempty"`
+	TeamB            *TeamBasicInfo      `json:"team_b,omitempty" bson:"team_b,omitempty"`
 }

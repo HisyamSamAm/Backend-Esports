@@ -1,6 +1,7 @@
 package router
 
 import (
+	"embeck/config/middleware"
 	"embeck/handler"
 
 	"github.com/gofiber/fiber/v2"
@@ -56,14 +57,9 @@ func SetupRoutes(app *fiber.App) {
 	api.Put("/matches/:id", handler.UpdateMatch)
 	api.Delete("/matches/:id", handler.DeleteMatch)
 
-	// Ticket routes (now public - no auth required)
-	api.Get("/tickets", handler.GetAllTickets)
-	api.Get("/tickets/:id", handler.GetTicketByID)
-	api.Post("/tickets", handler.CreateTicket)
-	api.Put("/tickets/:id", handler.UpdateTicket)
-	api.Delete("/tickets/:id", handler.DeleteTicket)
-	api.Get("/tickets/tournament/:tournamentId", handler.GetTicketsByTournament)
-	api.Get("/tickets/user/:userId", handler.GetTicketsByUser)
+	// User-specific routes (require authentication)
+	api.Post("/tickets/purchase", middleware.AuthMiddleware(), handler.HandlePurchaseTicket)
+	api.Get("/me/tickets", middleware.AuthMiddleware(), handler.HandleGetUserTickets)
 
 	// Legacy admin routes (redirected to main routes for compatibility)
 	admin := api.Group("/admin")
@@ -97,10 +93,4 @@ func SetupRoutes(app *fiber.App) {
 	admin.Post("/matches", handler.CreateMatch)
 	admin.Put("/matches/:id", handler.UpdateMatch)
 	admin.Delete("/matches/:id", handler.DeleteMatch)
-
-	admin.Get("/tickets", handler.GetAllTickets)
-	admin.Get("/tickets/:id", handler.GetTicketByID)
-	admin.Post("/tickets", handler.CreateTicket)
-	admin.Put("/tickets/:id", handler.UpdateTicket)
-	admin.Delete("/tickets/:id", handler.DeleteTicket)
 }
