@@ -66,7 +66,10 @@ func GetTicketsByUserID(ctx context.Context, userID primitive.ObjectID) ([]model
 			},
 		},
 		{
-			"$unwind": "$match_details_full",
+			"$unwind": bson.M{
+				"path":                       "$match_details_full",
+				"preserveNullAndEmptyArrays": true, // Keep tickets even if match is not found
+			},
 		},
 		{
 			"$lookup": bson.M{
@@ -92,35 +95,25 @@ func GetTicketsByUserID(ctx context.Context, userID primitive.ObjectID) ([]model
 				"purchase_date": 1,
 				"status":        1,
 				"match_details": bson.M{
-					"id":         "$match_details_full._id",
-					"match_date": "$match_details_full.match_date",
-					"match_time": "$match_details_full.match_time",
-					"round":      "$match_details_full.round",
-					"status":     "$match_details_full.status",
-					"team_a":     bson.M{"$arrayElemAt": []interface{}{"$team_a_info", 0}},
-					"team_b":     bson.M{"$arrayElemAt": []interface{}{"$team_b_info", 0}},
+					"$ifNull": []interface{}{
+						bson.M{
+							"_id":                 "$match_details_full._id",
+							"match_date":          "$match_details_full.match_date",
+							"match_time":          "$match_details_full.match_time",
+							"round":               "$match_details_full.round",
+							"status":              "$match_details_full.status",
+							"result_team_a_score": "$match_details_full.result_team_a_score",
+							"result_team_b_score": "$match_details_full.result_team_b_score",
+							"team_a": bson.M{
+								"$arrayElemAt": []interface{}{"$team_a_info", 0},
+							},
+							"team_b": bson.M{
+								"$arrayElemAt": []interface{}{"$team_b_info", 0},
+							},
+						},
+						nil, // Return null if match_details_full is null/missing
+					},
 				},
-			},
-		},
-		{
-			// Cleanup team fields to match TeamBasicInfo
-			"$project": bson.M{
-				"_id":                            1,
-				"user_id":                        1,
-				"match_id":                       1,
-				"purchase_date":                  1,
-				"status":                         1,
-				"match_details.id":               1,
-				"match_details.match_date":       1,
-				"match_details.match_time":       1,
-				"match_details.round":            1,
-				"match_details.status":           1,
-				"match_details.team_a._id":       "$match_details.team_a._id",
-				"match_details.team_a.team_name": "$match_details.team_a.team_name",
-				"match_details.team_a.logo_url":  "$match_details.team_a.logo_url",
-				"match_details.team_b._id":       "$match_details.team_b._id",
-				"match_details.team_b.team_name": "$match_details.team_b.team_name",
-				"match_details.team_b.logo_url":  "$match_details.team_b.logo_url",
 			},
 		},
 	}

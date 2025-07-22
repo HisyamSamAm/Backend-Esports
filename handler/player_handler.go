@@ -14,6 +14,7 @@ import (
 // @Tags Players
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {array} model.Player "Daftar semua pemain"
 // @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /api/admin/players [get]
@@ -34,6 +35,7 @@ func GetAllPlayers(c *fiber.Ctx) error {
 // @Tags Players
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Player ID" example("64f123abc456def789012345")
 // @Success 200 {object} model.Player "Detail pemain"
 // @Failure 400 {object} map[string]interface{} "ID tidak valid"
@@ -65,25 +67,27 @@ func GetPlayerByID(c *fiber.Ctx) error {
 // @Tags Players
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param request body model.PlayerRequest true "Player data"
 // @Success 201 {object} model.PlayerResponse "Player berhasil dibuat"
-// @Failure 400 {object} map[string]interface{} "Request data tidak valid"
-// @Failure 409 {object} map[string]interface{} "Player sudah ada"
-// @Failure 500 {object} map[string]interface{} "Internal server error"
+// @Failure 400 {object} model.ErrorResponse "Request data tidak valid"
+// @Failure 409 {object} model.ErrorResponse "Player sudah ada"
 // @Router /api/admin/players [post]
 func CreatePlayer(c *fiber.Ctx) error {
 	var req model.PlayerRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request data",
+		return c.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{
+			Error:   "invalid_request",
+			Message: "Invalid request data",
 		})
 	}
 
 	// Validation
 	if req.Name == "" || req.MLNickname == "" || req.MLID == "" || req.Status == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "All fields (name, ml_nickname, ml_id, status) are required",
+		return c.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{
+			Error:   "missing_fields",
+			Message: "All fields (name, ml_nickname, ml_id, status) are required",
 		})
 	}
 
@@ -97,8 +101,9 @@ func CreatePlayer(c *fiber.Ctx) error {
 
 	insertedID, err := repository.InsertPlayer(c.Context(), player)
 	if err != nil {
-		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
-			"error": fmt.Sprintf("Gagal menambahkan player: %v", err),
+		return c.Status(fiber.StatusConflict).JSON(model.ErrorResponse{
+			Error:   "db_conflict",
+			Message: fmt.Sprintf("Gagal menambahkan player: %v", err),
 		})
 	}
 
@@ -114,20 +119,21 @@ func CreatePlayer(c *fiber.Ctx) error {
 // @Tags Players
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Player ID" example("64f123abc456def789012345")
 // @Param request body model.PlayerRequest true "Player data"
 // @Success 200 {object} model.PlayerResponse "Player berhasil diupdate"
-// @Failure 400 {object} map[string]interface{} "Request data tidak valid"
-// @Failure 404 {object} map[string]interface{} "Player tidak ditemukan"
-// @Failure 500 {object} map[string]interface{} "Internal server error"
+// @Failure 400 {object} model.ErrorResponse "Request data tidak valid"
+// @Failure 404 {object} model.ErrorResponse "Player tidak ditemukan"
 // @Router /api/admin/players/{id} [put]
 func UpdatePlayer(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var req model.PlayerRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request data",
+		return c.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{
+			Error:   "invalid_request",
+			Message: "Invalid request data",
 		})
 	}
 
@@ -148,8 +154,9 @@ func UpdatePlayer(c *fiber.Ctx) error {
 
 	_, err := repository.UpdatePlayer(c.Context(), id, update)
 	if err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": fmt.Sprintf("Error updating player %s: %v", id, err),
+		return c.Status(fiber.StatusNotFound).JSON(model.ErrorResponse{
+			Error:   "update_failed",
+			Message: fmt.Sprintf("Error updating player %s: %v", id, err),
 		})
 	}
 
@@ -164,6 +171,7 @@ func UpdatePlayer(c *fiber.Ctx) error {
 // @Tags Players
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Player ID" example("64f123abc456def789012345")
 // @Success 200 {object} map[string]interface{} "Player berhasil dihapus"
 // @Failure 400 {object} map[string]interface{} "ID tidak valid"

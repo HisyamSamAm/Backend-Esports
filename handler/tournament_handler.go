@@ -18,12 +18,12 @@ import (
 // @Tags Tournament Management (Admin)
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param tournament body model.TournamentRequest true "Tournament data"
 // @Success 201 {object} model.TournamentResponse
 // @Failure 400 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
 // @Router /api/admin/tournaments [post]
-// @Security BearerAuth
 func CreateTournament(c *fiber.Ctx) error {
 	var req model.TournamentRequest
 
@@ -122,10 +122,10 @@ func CreateTournament(c *fiber.Ctx) error {
 // @Description Get all tournaments with admin details
 // @Tags Tournament Management (Admin)
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {array} model.TournamentWithDetails
 // @Failure 500 {object} model.ErrorResponse
 // @Router /api/admin/tournaments [get]
-// @Security BearerAuth
 func GetAllTournaments(c *fiber.Ctx) error {
 	tournaments, err := repository.GetAllTournaments()
 	if err != nil {
@@ -143,12 +143,12 @@ func GetAllTournaments(c *fiber.Ctx) error {
 // @Description Get tournament details by ID (admin access)
 // @Tags Tournament Management (Admin)
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Tournament ID"
 // @Success 200 {object} model.Tournament
 // @Failure 404 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
 // @Router /api/admin/tournaments/{id} [get]
-// @Security BearerAuth
 func GetTournamentByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -176,6 +176,7 @@ func GetTournamentByID(c *fiber.Ctx) error {
 // @Tags Tournament Management (Admin)
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Tournament ID"
 // @Param tournament body model.TournamentRequest true "Tournament data"
 // @Success 200 {object} model.TournamentResponse
@@ -183,7 +184,6 @@ func GetTournamentByID(c *fiber.Ctx) error {
 // @Failure 404 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
 // @Router /api/admin/tournaments/{id} [put]
-// @Security BearerAuth
 func UpdateTournament(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var req model.TournamentRequest
@@ -292,12 +292,12 @@ func UpdateTournament(c *fiber.Ctx) error {
 // @Description Delete tournament by ID
 // @Tags Tournament Management (Admin)
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Tournament ID"
 // @Success 200 {object} model.TournamentResponse
 // @Failure 404 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
 // @Router /api/admin/tournaments/{id} [delete]
-// @Security BearerAuth
 func DeleteTournament(c *fiber.Ctx) error {
 	id := c.Params("id")
 

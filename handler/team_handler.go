@@ -15,6 +15,7 @@ import (
 // @Tags Teams
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {array} model.TeamWithDetails
 // @Failure 500 {object} map[string]interface{}
 // @Router /api/admin/teams [get]
@@ -35,6 +36,7 @@ func GetAllTeams(c *fiber.Ctx) error {
 // @Tags Teams
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Team ID"
 // @Success 200 {object} model.TeamWithDetails
 // @Failure 400 {object} map[string]interface{}
@@ -65,32 +67,36 @@ func GetTeamByID(c *fiber.Ctx) error {
 // @Tags Teams
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param request body model.TeamRequest true "Team data"
 // @Success 201 {object} model.TeamResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 409 {object} map[string]interface{}
+// @Failure 400 {object} model.ErrorResponse
+// @Failure 409 {object} model.ErrorResponse
 // @Router /api/admin/teams [post]
 func CreateTeam(c *fiber.Ctx) error {
 	var req model.TeamRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request data",
+		return c.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{
+			Error:   "invalid_request",
+			Message: "Invalid request data",
 		})
 	}
 
 	// Validation
 	if req.TeamName == "" || req.CaptainID == "" || len(req.Members) == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "team_name, captain_id, and members are required",
+		return c.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{
+			Error:   "missing_fields",
+			Message: "team_name, captain_id, and members are required",
 		})
 	}
 
 	// Convert captain_id string to ObjectID
 	captainObjID, err := primitive.ObjectIDFromHex(req.CaptainID)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid captain_id format",
+		return c.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{
+			Error:   "invalid_id",
+			Message: "Invalid captain_id format",
 		})
 	}
 
@@ -99,8 +105,9 @@ func CreateTeam(c *fiber.Ctx) error {
 	for _, memberID := range req.Members {
 		objID, err := primitive.ObjectIDFromHex(memberID)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": fmt.Sprintf("Invalid member ID format: %s", memberID),
+			return c.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{
+				Error:   "invalid_id",
+				Message: fmt.Sprintf("Invalid member ID format: %s", memberID),
 			})
 		}
 		membersObjID = append(membersObjID, objID)
@@ -115,8 +122,9 @@ func CreateTeam(c *fiber.Ctx) error {
 		}
 	}
 	if !captainInMembers {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Captain must be included in members list",
+		return c.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{
+			Error:   "validation_error",
+			Message: "Captain must be included in members list",
 		})
 	}
 
@@ -130,8 +138,9 @@ func CreateTeam(c *fiber.Ctx) error {
 
 	insertedID, err := repository.InsertTeam(c.Context(), team)
 	if err != nil {
-		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
-			"error": fmt.Sprintf("Gagal menambahkan team: %v", err),
+		return c.Status(fiber.StatusConflict).JSON(model.ErrorResponse{
+			Error:   "db_conflict",
+			Message: fmt.Sprintf("Gagal menambahkan team: %v", err),
 		})
 	}
 
@@ -147,19 +156,21 @@ func CreateTeam(c *fiber.Ctx) error {
 // @Tags Teams
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Team ID"
 // @Param request body model.TeamRequest true "Team data"
 // @Success 200 {object} model.TeamResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 404 {object} map[string]interface{}
+// @Failure 400 {object} model.ErrorResponse
+// @Failure 404 {object} model.ErrorResponse
 // @Router /api/admin/teams/{id} [put]
 func UpdateTeam(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var req model.TeamRequest
 
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request data",
+		return c.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{
+			Error:   "invalid_request",
+			Message: "Invalid request data",
 		})
 	}
 
@@ -173,8 +184,9 @@ func UpdateTeam(c *fiber.Ctx) error {
 	if req.CaptainID != "" {
 		captainObjID, err := primitive.ObjectIDFromHex(req.CaptainID)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "Invalid captain_id format",
+			return c.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{
+				Error:   "invalid_id",
+				Message: "Invalid captain_id format",
 			})
 		}
 		update.CaptainID = captainObjID
@@ -185,8 +197,9 @@ func UpdateTeam(c *fiber.Ctx) error {
 		for _, memberID := range req.Members {
 			objID, err := primitive.ObjectIDFromHex(memberID)
 			if err != nil {
-				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-					"error": fmt.Sprintf("Invalid member ID format: %s", memberID),
+				return c.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{
+					Error:   "invalid_id",
+					Message: fmt.Sprintf("Invalid member ID format: %s", memberID),
 				})
 			}
 			membersObjID = append(membersObjID, objID)
@@ -203,8 +216,9 @@ func UpdateTeam(c *fiber.Ctx) error {
 				}
 			}
 			if !captainInMembers {
-				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-					"error": "Captain must be included in members list",
+				return c.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{
+					Error:   "validation_error",
+					Message: "Captain must be included in members list",
 				})
 			}
 		}
@@ -216,8 +230,9 @@ func UpdateTeam(c *fiber.Ctx) error {
 
 	_, err := repository.UpdateTeam(c.Context(), id, update)
 	if err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": fmt.Sprintf("Error updating team %s: %v", id, err),
+		return c.Status(fiber.StatusNotFound).JSON(model.ErrorResponse{
+			Error:   "update_failed",
+			Message: fmt.Sprintf("Error updating team %s: %v", id, err),
 		})
 	}
 
@@ -232,6 +247,7 @@ func UpdateTeam(c *fiber.Ctx) error {
 // @Tags Teams
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Team ID"
 // @Success 200 {object} model.TeamResponse
 // @Failure 400 {object} map[string]interface{}

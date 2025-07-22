@@ -4,9 +4,9 @@ import (
 	"embeck/model"
 	"embeck/repository"
 	"strings"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // GetAllUsers godoc
@@ -151,31 +151,29 @@ func UpdateUser(c *fiber.Ctx) error {
 	}
 
 	// Prepare update data - only update fields that are provided
-	updateUser := model.User{
-		UpdatedAt: time.Now(),
-	}
+	updateData := bson.M{}
 
 	if req.Username != "" {
-		updateUser.Username = req.Username
+		updateData["username"] = req.Username
 	}
 	if req.Email != "" {
-		updateUser.Email = strings.ToLower(req.Email)
+		updateData["email"] = strings.ToLower(req.Email)
 	}
 	if req.Role != "" {
-		updateUser.Role = req.Role
+		updateData["role"] = req.Role
 	}
 
 	// Update user in database
-	_, err = repository.UpdateUser(c.Context(), id, updateUser)
+	_, err = repository.UpdateUser(c.Context(), id, updateData)
 	if err != nil {
 		if strings.Contains(err.Error(), "sudah digunakan") {
 			return c.Status(fiber.StatusConflict).JSON(fiber.Map{
 				"error": err.Error(),
 			})
 		}
-		if strings.Contains(err.Error(), "tidak ada data yang diupdate") {
+		if strings.Contains(err.Error(), "tidak ada data yang diupdate") || strings.Contains(err.Error(), "not found") {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-				"error": "User not found",
+				"error": "User not found or no changes made",
 			})
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

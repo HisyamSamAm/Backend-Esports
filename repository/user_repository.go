@@ -130,16 +130,16 @@ func GetAllUsers(ctx context.Context) ([]model.UserProfile, error) {
 }
 
 // UpdateUser updates user data
-func UpdateUser(ctx context.Context, id string, update model.User) (updatedID string, err error) {
+func UpdateUser(ctx context.Context, id string, updateData bson.M) (updatedID string, err error) {
 	objID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return "", fmt.Errorf("invalid user ID format")
 	}
 
 	// Check if username already exists (excluding current user)
-	if update.Username != "" {
+	if username, ok := updateData["username"].(string); ok && username != "" {
 		usernameFilter := bson.M{
-			"username": update.Username,
+			"username": username,
 			"_id":      bson.M{"$ne": objID},
 		}
 		usernameCount, err := config.UsersCollection.CountDocuments(ctx, usernameFilter)
@@ -148,14 +148,14 @@ func UpdateUser(ctx context.Context, id string, update model.User) (updatedID st
 			return "", err
 		}
 		if usernameCount > 0 {
-			return "", fmt.Errorf("Username %s sudah digunakan user lain", update.Username)
+			return "", fmt.Errorf("Username %s sudah digunakan user lain", username)
 		}
 	}
 
 	// Check if email already exists (excluding current user)
-	if update.Email != "" {
+	if email, ok := updateData["email"].(string); ok && email != "" {
 		emailFilter := bson.M{
-			"email": update.Email,
+			"email": email,
 			"_id":   bson.M{"$ne": objID},
 		}
 		emailCount, err := config.UsersCollection.CountDocuments(ctx, emailFilter)
@@ -164,23 +164,28 @@ func UpdateUser(ctx context.Context, id string, update model.User) (updatedID st
 			return "", err
 		}
 		if emailCount > 0 {
-			return "", fmt.Errorf("Email %s sudah digunakan user lain", update.Email)
+			return "", fmt.Errorf("Email %s sudah digunakan user lain", email)
 		}
 	}
 
 	// Set updated timestamp
-	update.UpdatedAt = time.Now()
+	updateData["updated_at"] = time.Now()
 
 	filter := bson.M{"_id": objID}
-	updateData := bson.M{"$set": update}
+	updatePayload := bson.M{"$set": updateData}
 
-	result, err := config.UsersCollection.UpdateOne(ctx, filter, updateData)
+	result, err := config.UsersCollection.UpdateOne(ctx, filter, updatePayload)
 	if err != nil {
 		fmt.Printf("UpdateUser: %v\n", err)
 		return "", err
 	}
 	if result.ModifiedCount == 0 {
-		return "", fmt.Errorf("tidak ada data yang diupdate untuk User ID %s", id)
+		// Check if the user exists to return a more specific error
+		userExists, _ := GetUserByID(ctx, id)
+		if userExists == nil {
+			return "", fmt.Errorf("user with ID %s not found", id)
+		}
+		return "", fmt.Errorf("tidak ada data yang diupdate untuk User ID %s (data mungkin sama)", id)
 	}
 	return id, nil
 }

@@ -26,17 +26,17 @@ type Match struct {
 
 // MatchRequest represents request body for creating/updating match
 type MatchRequest struct {
-	TournamentID     string    `json:"tournament_id" validate:"required"`
-	TeamAID          string    `json:"team_a_id" validate:"required"`
-	TeamBID          string    `json:"team_b_id" validate:"required"`
+	TournamentID     string    `json:"tournament_id" validate:"required" example:"687e5cd44643a58edf8210e8"`
+	TeamAID          string    `json:"team_a_id" validate:"required" example:"687f9d7c8efa8f58af86646a"`
+	TeamBID          string    `json:"team_b_id" validate:"required" example:"687f9d7c8efa8f58af86646b"`
 	MatchDate        time.Time `json:"match_date" validate:"required"`
-	MatchTime        string    `json:"match_time" validate:"required"`
-	Location         string    `json:"location,omitempty"`
-	Round            string    `json:"round" validate:"required"`
-	ResultTeamAScore *int      `json:"result_team_a_score,omitempty"`
-	ResultTeamBScore *int      `json:"result_team_b_score,omitempty"`
-	WinnerTeamID     string    `json:"winner_team_id,omitempty"`
-	Status           string    `json:"status" validate:"required,oneof=scheduled ongoing completed cancelled"`
+	MatchTime        string    `json:"match_time" validate:"required" example:"20:00"`
+	Location         string    `json:"location,omitempty" example:"Stadium XYZ"`
+	Round            string    `json:"round" validate:"required" example:"Grand Final"`
+	ResultTeamAScore *int      `json:"result_team_a_score,omitempty" example:"2"`
+	ResultTeamBScore *int      `json:"result_team_b_score,omitempty" example:"3"`
+	WinnerTeamID     string    `json:"winner_team_id,omitempty" example:"687f9d7c8efa8f58af86646b"`
+	Status           string    `json:"status" validate:"required,oneof=scheduled ongoing completed cancelled" example:"completed"`
 }
 
 // MatchResponse represents response for match operations

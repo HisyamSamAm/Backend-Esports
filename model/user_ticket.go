@@ -22,10 +22,10 @@ type UserTicketRequest struct {
 
 // UserTicketResponse represents a single purchased ticket with populated match details.
 type UserTicketResponse struct {
-	ID           primitive.ObjectID `json:"_id"`
-	UserID       primitive.ObjectID `json:"user_id"`
-	MatchID      primitive.ObjectID `json:"match_id"`
-	PurchaseDate time.Time          `json:"purchase_date"`
-	Status       string             `json:"status"`
-	MatchDetails *MatchBasicInfo    `json:"match_details,omitempty"`
+	ID           primitive.ObjectID `json:"_id" bson:"_id,omitempty"`
+	UserID       primitive.ObjectID `json:"user_id" bson:"user_id"`
+	MatchID      primitive.ObjectID `json:"match_id" bson:"match_id"`
+	PurchaseDate time.Time          `json:"purchase_date" bson:"purchase_date"`
+	Status       string             `json:"status" bson:"status"`
+	MatchDetails *MatchBasicInfo    `json:"match_details,omitempty" bson:"match_details,omitempty"`
 }

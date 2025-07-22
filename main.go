@@ -25,19 +25,19 @@ func init() {
 	}
 }
 
-// @title EMBECK API - Turnamen Esports Management
+// @title ESports Management API
 // @version 1.0
-// @description API untuk manajemen turnamen esports Mobile Legends
-
+// @description This is the API for the ESports Management platform.
 // @contact.name API Support
-// @contact.url https://github.com/rrq-dev/EMBECK
 // @contact.email support@embeck.com
-
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host localhost:1010
 // @BasePath /
-// @schemes http https
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
+// @description Type "Bearer" followed by a space and a PASETO token.
 func main() {
 	// Create Fiber app
 	app := fiber.New(fiber.Config{
@@ -57,7 +57,7 @@ func main() {
 	// Setup Cors
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     strings.Join(config.GetAllowedOrigins(), ","),
-		AllowHeaders:    "Origin, Content-Type, Accept, Authorization",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowCredentials: true,
 		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
 	}))

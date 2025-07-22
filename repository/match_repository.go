@@ -66,12 +66,12 @@ func CreateMatch(ctx context.Context, match model.Match) (insertedID interface{}
 	return insertResult.InsertedID, nil
 }
 
-// GetAllMatches retrieves all matches with optional tournament filter and populated team details
+// GetAllMatches retrieves all matches with populated team details
 func GetAllMatches(ctx context.Context, tournamentID string) ([]model.MatchWithDetails, error) {
 	pipeline := []bson.M{}
 
 	// Add tournament filter if provided
-	if tournamentID != "" {
+	if tournamentID != "" && tournamentID != "all" {
 		objID, err := primitive.ObjectIDFromHex(tournamentID)
 		if err != nil {
 			return nil, fmt.Errorf("invalid tournament ID format")

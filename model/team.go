@@ -19,10 +19,10 @@ type Team struct {
 
 // TeamRequest represents request body for creating/updating team
 type TeamRequest struct {
-	TeamName  string   `json:"team_name" bson:"team_name"`
-	CaptainID string   `json:"captain_id" bson:"captain_id"`
-	Members   []string `json:"members" bson:"members"`
-	LogoURL   string   `json:"logo_url,omitempty" bson:"logo_url,omitempty"`
+	TeamName  string   `json:"team_name" bson:"team_name" example:"RRQ Hoshi"`
+	CaptainID string   `json:"captain_id" bson:"captain_id" example:"687f9d7c8efa8f58af86646a"`
+	Members   []string `json:"members" bson:"members" example:"687f9d7c8efa8f58af86646a,687f9d7c8efa8f58af86646b"`
+	LogoURL   string   `json:"logo_url,omitempty" bson:"logo_url,omitempty" example:"https://example.com/rrq_logo.png"`
 }
 
 // TeamResponse represents response for team operations

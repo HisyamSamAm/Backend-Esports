@@ -18,79 +18,65 @@ func SetupRoutes(app *fiber.App) {
 	// API group
 	api := app.Group("/api")
 
-	// Authentication routes (public - optional untuk testing)
-	auth := api.Group("/auth")
-	auth.Post("/register", handler.Register)
-	auth.Post("/login", handler.Login)
-	auth.Get("/profile", handler.GetProfile) // Removed auth middleware
+	// ==================
+	// Public Routes
+	// ==================
+	public := api.Group("/")
+	public.Post("/auth/register", handler.Register)
+	public.Post("/auth/login", handler.Login)
+	public.Get("/tournaments", handler.GetAllTournamentsPublic)
+	public.Get("/tournaments/:id", handler.GetTournamentWithDetailsByID)
 
-	// Upload routes (now public)
-	upload := api.Group("/upload")
-	upload.Post("/team-logo", handler.UploadTeamLogo)
-	upload.Post("/player-avatar", handler.UploadPlayerAvatar)
+	// ==================
+	// Authenticated User Routes (User & Admin)
+	// ==================
+	authRequired := api.Group("/")
+	authRequired.Use(middleware.AuthMiddleware())
+	authRequired.Get("/auth/profile", handler.GetProfile) // Now requires auth
+	authRequired.Post("/tickets/purchase", handler.HandlePurchaseTicket)
+	authRequired.Get("/me/tickets", handler.HandleGetUserTickets)
 
-	// Player routes (now public - no auth required)
-	api.Get("/players", handler.GetAllPlayers)
-	api.Get("/players/:id", handler.GetPlayerByID)
-	api.Post("/players", handler.CreatePlayer)
-	api.Put("/players/:id", handler.UpdatePlayer)
-	api.Delete("/players/:id", handler.DeletePlayer)
-
-	// Team routes (now public - no auth required)
-	api.Get("/teams", handler.GetAllTeams)
-	api.Get("/teams/:id", handler.GetTeamByID)
-	api.Post("/teams", handler.CreateTeam)
-	api.Put("/teams/:id", handler.UpdateTeam)
-	api.Delete("/teams/:id", handler.DeleteTeam)
-
-	// Tournament routes (now public - no auth required)
-	api.Get("/tournaments", handler.GetAllTournamentsPublic)
-	api.Get("/tournaments/:id", handler.GetTournamentWithDetailsByID)
-	api.Post("/tournaments", handler.CreateTournament)
-	api.Put("/tournaments/:id", handler.UpdateTournament)
-	api.Delete("/tournaments/:id", handler.DeleteTournament)
-
-	// Match routes (now public - no auth required)
-	api.Get("/matches", handler.GetAllMatches)
-	api.Get("/matches/:id", handler.GetMatchByID)
-	api.Post("/matches", handler.CreateMatch)
-	api.Put("/matches/:id", handler.UpdateMatch)
-	api.Delete("/matches/:id", handler.DeleteMatch)
-
-	// User-specific routes (require authentication)
-	api.Post("/tickets/purchase", middleware.AuthMiddleware(), handler.HandlePurchaseTicket)
-	api.Get("/me/tickets", middleware.AuthMiddleware(), handler.HandleGetUserTickets)
-
-	// Legacy admin routes (redirected to main routes for compatibility)
+	// ==================
+	// Admin Only Routes
+	// ==================
 	admin := api.Group("/admin")
+	admin.Use(middleware.AuthMiddleware(), middleware.AdminMiddleware())
 
-	// User management routes (admin only)
+	// Player Management (Admin)
+	admin.Get("/players", handler.GetAllPlayers)
+	admin.Post("/players", handler.CreatePlayer)
+	admin.Get("/players/:id", handler.GetPlayerByID)
+	admin.Put("/players/:id", handler.UpdatePlayer)
+	admin.Delete("/players/:id", handler.DeletePlayer)
+
+	// Team Management (Admin)
+	admin.Get("/teams", handler.GetAllTeams)
+	admin.Post("/teams", handler.CreateTeam)
+	admin.Get("/teams/:id", handler.GetTeamByID)
+	admin.Put("/teams/:id", handler.UpdateTeam)
+	admin.Delete("/teams/:id", handler.DeleteTeam)
+
+	// Tournament Management (Admin)
+	admin.Get("/tournaments", handler.GetAllTournaments)
+	admin.Post("/tournaments", handler.CreateTournament)
+	admin.Get("/tournaments/:id", handler.GetTournamentByID)
+	admin.Put("/tournaments/:id", handler.UpdateTournament)
+	admin.Delete("/tournaments/:id", handler.DeleteTournament)
+
+	// Match Management (Admin)
+	admin.Get("/matches", handler.GetAllMatches)
+	admin.Post("/matches", handler.CreateMatch)
+	admin.Get("/matches/:id", handler.GetMatchByID)
+	admin.Put("/matches/:id", handler.UpdateMatch)
+	admin.Delete("/matches/:id", handler.DeleteMatch)
+
+	// User Management (Admin)
 	admin.Get("/users", handler.GetAllUsers)
 	admin.Get("/users/:id", handler.GetUserByID)
 	admin.Put("/users/:id", handler.UpdateUser)
 	admin.Delete("/users/:id", handler.DeleteUser)
 
-	admin.Get("/players", handler.GetAllPlayers)
-	admin.Get("/players/:id", handler.GetPlayerByID)
-	admin.Post("/players", handler.CreatePlayer)
-	admin.Put("/players/:id", handler.UpdatePlayer)
-	admin.Delete("/players/:id", handler.DeletePlayer)
-
-	admin.Get("/teams", handler.GetAllTeams)
-	admin.Get("/teams/:id", handler.GetTeamByID)
-	admin.Post("/teams", handler.CreateTeam)
-	admin.Put("/teams/:id", handler.UpdateTeam)
-	admin.Delete("/teams/:id", handler.DeleteTeam)
-
-	admin.Get("/tournaments", handler.GetAllTournaments)
-	admin.Get("/tournaments/:id", handler.GetTournamentByID)
-	admin.Post("/tournaments", handler.CreateTournament)
-	admin.Put("/tournaments/:id", handler.UpdateTournament)
-	admin.Delete("/tournaments/:id", handler.DeleteTournament)
-
-	admin.Get("/matches", handler.GetAllMatches)
-	admin.Get("/matches/:id", handler.GetMatchByID)
-	admin.Post("/matches", handler.CreateMatch)
-	admin.Put("/matches/:id", handler.UpdateMatch)
-	admin.Delete("/matches/:id", handler.DeleteMatch)
+	// Upload routes (Admin)
+	admin.Post("/upload/team-logo", handler.UploadTeamLogo)
+	admin.Post("/upload/player-avatar", handler.UploadPlayerAvatar)
 }

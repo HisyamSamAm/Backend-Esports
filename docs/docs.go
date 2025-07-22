@@ -11,8 +11,11 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "contact": {
             "name": "API Support",
-            "url": "https://github.com/rrq-dev/EMBECK",
             "email": "support@embeck.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
         "version": "{{.Version}}"
     },
@@ -21,7 +24,12 @@ const docTemplate = `{
     "paths": {
         "/api/admin/matches": {
             "get": {
-                "description": "Mendapatkan daftar semua pertandingan dengan filter tournament_id opsional",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mendapatkan daftar semua pertandingan, bisa difilter berdasarkan tournament_id",
                 "consumes": [
                     "application/json"
                 ],
@@ -35,7 +43,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Tournament ID filter",
+                        "description": "Filter pertandingan berdasarkan ID turnamen",
                         "name": "tournament_id",
                         "in": "query"
                     }
@@ -46,20 +54,24 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Match"
+                                "$ref": "#/definitions/model.MatchWithDetails"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Membuat pertandingan baru untuk turnamen",
                 "consumes": [
                     "application/json"
@@ -92,15 +104,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -108,6 +118,11 @@ const docTemplate = `{
         },
         "/api/admin/matches/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mendapatkan detail pertandingan berdasarkan ID",
                 "consumes": [
                     "application/json"
@@ -138,20 +153,23 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Memperbarui detail pertandingan termasuk input skor",
                 "consumes": [
                     "application/json"
@@ -191,20 +209,23 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Menghapus pertandingan dari database",
                 "consumes": [
                     "application/json"
@@ -232,18 +253,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.MatchResponse"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -251,6 +264,11 @@ const docTemplate = `{
         },
         "/api/admin/players": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mendapatkan daftar semua pemain Mobile Legends",
                 "consumes": [
                     "application/json"
@@ -282,6 +300,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Menambahkan pemain baru ke database",
                 "consumes": [
                     "application/json"
@@ -314,22 +337,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Request data tidak valid",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "Player sudah ada",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -337,6 +351,11 @@ const docTemplate = `{
         },
         "/api/admin/players/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mendapatkan detail pemain berdasarkan ID",
                 "consumes": [
                     "application/json"
@@ -389,6 +408,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Memperbarui detail pemain",
                 "consumes": [
                     "application/json"
@@ -429,27 +453,23 @@ const docTemplate = `{
                     "400": {
                         "description": "Request data tidak valid",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Player tidak ditemukan",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Menghapus pemain dari database",
                 "consumes": [
                     "application/json"
@@ -505,6 +525,11 @@ const docTemplate = `{
         },
         "/api/admin/teams": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mendapatkan daftar semua tim dengan detail kapten",
                 "consumes": [
                     "application/json"
@@ -536,6 +561,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Membuat tim baru dengan kapten dan anggota",
                 "consumes": [
                     "application/json"
@@ -568,15 +598,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -584,6 +612,11 @@ const docTemplate = `{
         },
         "/api/admin/teams/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mendapatkan detail tim berdasarkan ID dengan detail kapten",
                 "consumes": [
                     "application/json"
@@ -628,6 +661,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Memperbarui detail tim",
                 "consumes": [
                     "application/json"
@@ -667,20 +705,23 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Menghapus tim dari database",
                 "consumes": [
                     "application/json"
@@ -725,235 +766,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/admin/tickets": {
-            "get": {
-                "description": "Mendapatkan daftar semua jenis tiket dengan opsi filter dan populate tournament details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tickets"
-                ],
-                "summary": "Get All Ticket Types",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Filter berdasarkan Tournament ID",
-                        "name": "tournament_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "default": false,
-                        "description": "Include tournament details (true/false)",
-                        "name": "populate",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List semua ticket types dengan tournament details (dengan populate=true)",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.TicketWithTournament"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Tournament ID format tidak valid",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "500": {
-                        "description": "Gagal mengambil data dari database",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/tickets/{id}": {
-            "get": {
-                "description": "Mendapatkan detail jenis tiket berdasarkan ID dengan opsi populate tournament details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tickets"
-                ],
-                "summary": "Get Ticket Type By ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "\"64f123abc456def789012345\"",
-                        "description": "Ticket ID (ObjectID format)",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "boolean",
-                        "default": false,
-                        "description": "Include tournament details (true/false)",
-                        "name": "populate",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Detail ticket type dengan tournament details (dengan populate=true)",
-                        "schema": {
-                            "$ref": "#/definitions/model.TicketWithTournament"
-                        }
-                    },
-                    "400": {
-                        "description": "Ticket ID format tidak valid",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "404": {
-                        "description": "Ticket type tidak ditemukan",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Memperbarui detail jenis tiket. Field yang tidak diisi akan tetap menggunakan nilai lama.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tickets"
-                ],
-                "summary": "Update Ticket Type",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "\"64f123abc456def789012345\"",
-                        "description": "Ticket ID (ObjectID format)",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Data tiket yang akan diupdate (partial update supported)",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.TicketRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Ticket berhasil diupdate",
-                        "schema": {
-                            "$ref": "#/definitions/model.TicketResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Request data atau ID format tidak valid",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "404": {
-                        "description": "Ticket type tidak ditemukan",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Menghapus jenis tiket dari database secara permanen. Operasi ini tidak dapat dibatalkan.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tickets"
-                ],
-                "summary": "Delete Ticket Type",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "\"64f123abc456def789012345\"",
-                        "description": "Ticket ID (ObjectID format)",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Ticket berhasil dihapus",
-                        "schema": {
-                            "$ref": "#/definitions/model.TicketResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Ticket ID format tidak valid",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "404": {
-                        "description": "Ticket type tidak ditemukan",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
         "/api/admin/tournaments": {
             "get": {
                 "security": [
@@ -975,7 +787,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Tournament"
+                                "$ref": "#/definitions/model.TournamentWithDetails"
                             }
                         }
                     },
@@ -1176,6 +988,104 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/upload/player-avatar": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload player avatar image (PNG, JPG, JPEG)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Upload"
+                ],
+                "summary": "Upload player avatar",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Player avatar image file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.UploadResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/upload/team-logo": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload team logo image (PNG, JPG, JPEG)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Upload"
+                ],
+                "summary": "Upload team logo",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Team logo image file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.UploadResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/model.ErrorResponse"
                         }
@@ -1527,7 +1437,12 @@ const docTemplate = `{
         },
         "/api/auth/profile": {
             "get": {
-                "description": "Mendapatkan profil user untuk testing - tidak memerlukan authentication (demo mode)",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mendapatkan profil user yang sedang login",
                 "consumes": [
                     "application/json"
                 ],
@@ -1537,20 +1452,19 @@ const docTemplate = `{
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "Get User Profile (Demo Mode)",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID untuk mendapatkan profil (opsional)",
-                        "name": "user_id",
-                        "in": "query"
-                    }
-                ],
+                "summary": "Get User Profile",
                 "responses": {
                     "200": {
                         "description": "Profil user",
                         "schema": {
                             "$ref": "#/definitions/model.UserProfile"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "404": {
@@ -1625,9 +1539,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/tickets": {
-            "post": {
-                "description": "Membuat jenis tiket baru untuk turnamen. Setiap tournament bisa memiliki berbagai jenis tiket dengan harga dan kapasitas yang berbeda.",
+        "/api/me/tickets": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieves all tickets purchased by the currently authenticated user.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1637,52 +1556,40 @@ const docTemplate = `{
                 "tags": [
                     "Tickets"
                 ],
-                "summary": "Create New Ticket Type",
-                "parameters": [
-                    {
-                        "description": "Data tiket yang akan dibuat",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.TicketRequest"
-                        }
-                    }
-                ],
+                "summary": "Get My Tickets",
                 "responses": {
-                    "201": {
-                        "description": "Ticket berhasil dibuat",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.TicketResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.UserTicketResponse"
+                            }
                         }
                     },
-                    "400": {
-                        "description": "Request data tidak valid",
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "409": {
-                        "description": "Tournament tidak ditemukan",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/api/tickets/user/{userId}": {
-            "get": {
-                "description": "Mendapatkan semua tiket yang dimiliki oleh user tertentu",
+        "/api/tickets/purchase": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Allows an authenticated user to purchase a ticket for a specific match.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1692,38 +1599,53 @@ const docTemplate = `{
                 "tags": [
                     "Tickets"
                 ],
-                "summary": "Get Tickets by User ID",
+                "summary": "Purchase a ticket",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
+                        "description": "Purchase Ticket Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UserTicketRequest"
+                        }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "List tiket user",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.Ticket"
-                            }
+                            "$ref": "#/definitions/model.UserTicket"
                         }
                     },
                     "400": {
-                        "description": "ID user tidak valid",
+                        "description": "Invalid request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Match not found",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Ticket already purchased",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -1786,143 +1708,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/model.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/tournaments/{id}/tickets": {
-            "get": {
-                "description": "Mendapatkan semua jenis tiket yang tersedia untuk tournament tertentu",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tickets"
-                ],
-                "summary": "Get Tickets by Tournament ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Tournament ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List tiket untuk tournament",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.Ticket"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "ID tournament tidak valid",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/api/upload/player-avatar": {
-            "post": {
-                "description": "Upload player avatar image (PNG, JPG, JPEG)",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Upload"
-                ],
-                "summary": "Upload player avatar",
-                "parameters": [
-                    {
-                        "type": "file",
-                        "description": "Player avatar image file",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.UploadResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/model.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/model.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/upload/team-logo": {
-            "post": {
-                "description": "Upload team logo image (PNG, JPG, JPEG)",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Upload"
-                ],
-                "summary": "Upload team logo",
-                "parameters": [
-                    {
-                        "type": "file",
-                        "description": "Team logo image file",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.UploadResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/model.ErrorResponse"
                         }
@@ -2093,6 +1878,77 @@ const docTemplate = `{
             ],
             "properties": {
                 "location": {
+                    "type": "string",
+                    "example": "Stadium XYZ"
+                },
+                "match_date": {
+                    "type": "string"
+                },
+                "match_time": {
+                    "type": "string",
+                    "example": "20:00"
+                },
+                "result_team_a_score": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "result_team_b_score": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "round": {
+                    "type": "string",
+                    "example": "Grand Final"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "scheduled",
+                        "ongoing",
+                        "completed",
+                        "cancelled"
+                    ],
+                    "example": "completed"
+                },
+                "team_a_id": {
+                    "type": "string",
+                    "example": "687f9d7c8efa8f58af86646a"
+                },
+                "team_b_id": {
+                    "type": "string",
+                    "example": "687f9d7c8efa8f58af86646b"
+                },
+                "tournament_id": {
+                    "type": "string",
+                    "example": "687e5cd44643a58edf8210e8"
+                },
+                "winner_team_id": {
+                    "type": "string",
+                    "example": "687f9d7c8efa8f58af86646b"
+                }
+            }
+        },
+        "model.MatchResponse": {
+            "type": "object",
+            "properties": {
+                "match_id": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.MatchWithDetails": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "location": {
                     "type": "string"
                 },
                 "match_date": {
@@ -2111,16 +1967,16 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string",
-                    "enum": [
-                        "scheduled",
-                        "ongoing",
-                        "completed",
-                        "cancelled"
-                    ]
+                    "type": "string"
+                },
+                "team_a": {
+                    "$ref": "#/definitions/model.TeamBasicInfo"
                 },
                 "team_a_id": {
                     "type": "string"
+                },
+                "team_b": {
+                    "$ref": "#/definitions/model.TeamBasicInfo"
                 },
                 "team_b_id": {
                     "type": "string"
@@ -2128,18 +1984,10 @@ const docTemplate = `{
                 "tournament_id": {
                     "type": "string"
                 },
-                "winner_team_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.MatchResponse": {
-            "type": "object",
-            "properties": {
-                "match_id": {
+                "updated_at": {
                     "type": "string"
                 },
-                "message": {
+                "winner_team_id": {
                     "type": "string"
                 }
             }
@@ -2179,17 +2027,6 @@ const docTemplate = `{
                 "_id": {
                     "type": "string"
                 },
-                "ml_nickname": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.PlayerRequest": {
-            "type": "object",
-            "properties": {
-                "avatar_url": {
-                    "type": "string"
-                },
                 "ml_id": {
                     "type": "string"
                 },
@@ -2201,6 +2038,31 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "string"
+                }
+            }
+        },
+        "model.PlayerRequest": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string",
+                    "example": "https://example.com/avatar.png"
+                },
+                "ml_id": {
+                    "type": "string",
+                    "example": "123456789"
+                },
+                "ml_nickname": {
+                    "type": "string",
+                    "example": "johndoe123"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "active"
                 }
             }
         },
@@ -2258,19 +2120,26 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "captain_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "687f9d7c8efa8f58af86646a"
                 },
                 "logo_url": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://example.com/rrq_logo.png"
                 },
                 "members": {
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "687f9d7c8efa8f58af86646a",
+                        "687f9d7c8efa8f58af86646b"
+                    ]
                 },
                 "team_name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "RRQ Hoshi"
                 }
             }
         },
@@ -2323,116 +2192,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Ticket": {
-            "type": "object",
-            "properties": {
-                "_id": {
-                    "type": "string",
-                    "example": "64f123abc456def789012345"
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2025-07-16T07:28:37.016Z"
-                },
-                "description": {
-                    "type": "string",
-                    "example": "Tiket Reguler - Tribun A (Standing)"
-                },
-                "price": {
-                    "type": "integer",
-                    "example": 50000
-                },
-                "quantity_available": {
-                    "type": "integer",
-                    "example": 1000
-                },
-                "tournament_id": {
-                    "type": "string",
-                    "example": "64f123abc456def789012345"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2025-07-16T07:28:37.016Z"
-                }
-            }
-        },
-        "model.TicketRequest": {
-            "type": "object",
-            "required": [
-                "price",
-                "quantity_available",
-                "tournament_id"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string",
-                    "example": "Tiket Reguler - Tribun A (Standing)"
-                },
-                "price": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "example": 50000
-                },
-                "quantity_available": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "example": 1000
-                },
-                "tournament_id": {
-                    "type": "string",
-                    "example": "64f123abc456def789012345"
-                }
-            }
-        },
-        "model.TicketResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "Ticket type created successfully"
-                },
-                "ticket_id": {
-                    "type": "string",
-                    "example": "64f123abc456def789012345"
-                }
-            }
-        },
-        "model.TicketWithTournament": {
-            "type": "object",
-            "properties": {
-                "_id": {
-                    "type": "string",
-                    "example": "64f123abc456def789012345"
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2025-07-16T07:28:37.016Z"
-                },
-                "description": {
-                    "type": "string",
-                    "example": "Tiket Reguler - Tribun A (Standing)"
-                },
-                "price": {
-                    "type": "integer",
-                    "example": 50000
-                },
-                "quantity_available": {
-                    "type": "integer",
-                    "example": 1000
-                },
-                "tournament": {
-                    "$ref": "#/definitions/model.TournamentBasic"
-                },
-                "tournament_id": {
-                    "type": "string",
-                    "example": "64f123abc456def789012345"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2025-07-16T07:28:37.016Z"
-                }
-            }
-        },
         "model.Tournament": {
             "type": "object",
             "properties": {
@@ -2474,23 +2233,6 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
-                }
-            }
-        },
-        "model.TournamentBasic": {
-            "type": "object",
-            "properties": {
-                "_id": {
-                    "type": "string",
-                    "example": "64f123abc456def789012345"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "Mobile Legends Championship 2025"
-                },
-                "status": {
-                    "type": "string",
-                    "example": "upcoming"
                 }
             }
         },
@@ -2699,6 +2441,61 @@ const docTemplate = `{
                 }
             }
         },
+        "model.UserTicket": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "match_id": {
+                    "type": "string"
+                },
+                "purchase_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "e.g., \"valid\", \"used\"",
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserTicketRequest": {
+            "type": "object",
+            "required": [
+                "match_id"
+            ],
+            "properties": {
+                "match_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserTicketResponse": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "match_details": {
+                    "$ref": "#/definitions/model.MatchBasicInfo"
+                },
+                "match_id": {
+                    "type": "string"
+                },
+                "purchase_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.UsersListResponse": {
             "type": "object",
             "properties": {
@@ -2721,6 +2518,7 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and a PASETO token.",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
@@ -2731,11 +2529,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "",
+	Host:             "localhost:1010",
 	BasePath:         "/",
-	Schemes:          []string{"http", "https"},
-	Title:            "EMBECK API - Turnamen Esports Management",
-	Description:      "API untuk manajemen turnamen esports Mobile Legends",
+	Schemes:          []string{},
+	Title:            "ESports Management API",
+	Description:      "This is the API for the ESports Management platform.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

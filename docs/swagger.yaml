@@ -99,16 +99,21 @@ definitions:
   model.MatchRequest:
     properties:
       location:
+        example: Stadium XYZ
         type: string
       match_date:
         type: string
       match_time:
+        example: "20:00"
         type: string
       result_team_a_score:
+        example: 2
         type: integer
       result_team_b_score:
+        example: 3
         type: integer
       round:
+        example: Grand Final
         type: string
       status:
         enum:
@@ -116,14 +121,19 @@ definitions:
         - ongoing
         - completed
         - cancelled
+        example: completed
         type: string
       team_a_id:
+        example: 687f9d7c8efa8f58af86646a
         type: string
       team_b_id:
+        example: 687f9d7c8efa8f58af86646b
         type: string
       tournament_id:
+        example: 687e5cd44643a58edf8210e8
         type: string
       winner_team_id:
+        example: 687f9d7c8efa8f58af86646b
         type: string
     required:
     - match_date
@@ -139,6 +149,41 @@ definitions:
       match_id:
         type: string
       message:
+        type: string
+    type: object
+  model.MatchWithDetails:
+    properties:
+      _id:
+        type: string
+      created_at:
+        type: string
+      location:
+        type: string
+      match_date:
+        type: string
+      match_time:
+        type: string
+      result_team_a_score:
+        type: integer
+      result_team_b_score:
+        type: integer
+      round:
+        type: string
+      status:
+        type: string
+      team_a:
+        $ref: '#/definitions/model.TeamBasicInfo'
+      team_a_id:
+        type: string
+      team_b:
+        $ref: '#/definitions/model.TeamBasicInfo'
+      team_b_id:
+        type: string
+      tournament_id:
+        type: string
+      updated_at:
+        type: string
+      winner_team_id:
         type: string
     type: object
   model.Player:
@@ -164,13 +209,6 @@ definitions:
     properties:
       _id:
         type: string
-      ml_nickname:
-        type: string
-    type: object
-  model.PlayerRequest:
-    properties:
-      avatar_url:
-        type: string
       ml_id:
         type: string
       ml_nickname:
@@ -178,6 +216,24 @@ definitions:
       name:
         type: string
       status:
+        type: string
+    type: object
+  model.PlayerRequest:
+    properties:
+      avatar_url:
+        example: https://example.com/avatar.png
+        type: string
+      ml_id:
+        example: "123456789"
+        type: string
+      ml_nickname:
+        example: johndoe123
+        type: string
+      name:
+        example: John Doe
+        type: string
+      status:
+        example: active
         type: string
     type: object
   model.PlayerResponse:
@@ -218,14 +274,20 @@ definitions:
   model.TeamRequest:
     properties:
       captain_id:
+        example: 687f9d7c8efa8f58af86646a
         type: string
       logo_url:
+        example: https://example.com/rrq_logo.png
         type: string
       members:
+        example:
+        - 687f9d7c8efa8f58af86646a
+        - 687f9d7c8efa8f58af86646b
         items:
           type: string
         type: array
       team_name:
+        example: RRQ Hoshi
         type: string
     type: object
   model.TeamResponse:
@@ -260,86 +322,6 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.Ticket:
-    properties:
-      _id:
-        example: 64f123abc456def789012345
-        type: string
-      created_at:
-        example: "2025-07-16T07:28:37.016Z"
-        type: string
-      description:
-        example: Tiket Reguler - Tribun A (Standing)
-        type: string
-      price:
-        example: 50000
-        type: integer
-      quantity_available:
-        example: 1000
-        type: integer
-      tournament_id:
-        example: 64f123abc456def789012345
-        type: string
-      updated_at:
-        example: "2025-07-16T07:28:37.016Z"
-        type: string
-    type: object
-  model.TicketRequest:
-    properties:
-      description:
-        example: Tiket Reguler - Tribun A (Standing)
-        type: string
-      price:
-        example: 50000
-        minimum: 0
-        type: integer
-      quantity_available:
-        example: 1000
-        minimum: 0
-        type: integer
-      tournament_id:
-        example: 64f123abc456def789012345
-        type: string
-    required:
-    - price
-    - quantity_available
-    - tournament_id
-    type: object
-  model.TicketResponse:
-    properties:
-      message:
-        example: Ticket type created successfully
-        type: string
-      ticket_id:
-        example: 64f123abc456def789012345
-        type: string
-    type: object
-  model.TicketWithTournament:
-    properties:
-      _id:
-        example: 64f123abc456def789012345
-        type: string
-      created_at:
-        example: "2025-07-16T07:28:37.016Z"
-        type: string
-      description:
-        example: Tiket Reguler - Tribun A (Standing)
-        type: string
-      price:
-        example: 50000
-        type: integer
-      quantity_available:
-        example: 1000
-        type: integer
-      tournament:
-        $ref: '#/definitions/model.TournamentBasic'
-      tournament_id:
-        example: 64f123abc456def789012345
-        type: string
-      updated_at:
-        example: "2025-07-16T07:28:37.016Z"
-        type: string
-    type: object
   model.Tournament:
     properties:
       _id:
@@ -367,18 +349,6 @@ definitions:
           type: string
         type: array
       updated_at:
-        type: string
-    type: object
-  model.TournamentBasic:
-    properties:
-      _id:
-        example: 64f123abc456def789012345
-        type: string
-      name:
-        example: Mobile Legends Championship 2025
-        type: string
-      status:
-        example: upcoming
         type: string
     type: object
   model.TournamentPublic:
@@ -522,6 +492,42 @@ definitions:
         example: 64f123abc456def789012345
         type: string
     type: object
+  model.UserTicket:
+    properties:
+      _id:
+        type: string
+      match_id:
+        type: string
+      purchase_date:
+        type: string
+      status:
+        description: e.g., "valid", "used"
+        type: string
+      user_id:
+        type: string
+    type: object
+  model.UserTicketRequest:
+    properties:
+      match_id:
+        type: string
+    required:
+    - match_id
+    type: object
+  model.UserTicketResponse:
+    properties:
+      _id:
+        type: string
+      match_details:
+        $ref: '#/definitions/model.MatchBasicInfo'
+      match_id:
+        type: string
+      purchase_date:
+        type: string
+      status:
+        type: string
+      user_id:
+        type: string
+    type: object
   model.UsersListResponse:
     properties:
       data:
@@ -535,23 +541,26 @@ definitions:
         example: 5
         type: integer
     type: object
+host: localhost:1010
 info:
   contact:
     email: support@embeck.com
     name: API Support
-    url: https://github.com/rrq-dev/EMBECK
-  description: API untuk manajemen turnamen esports Mobile Legends
-  title: EMBECK API - Turnamen Esports Management
+  description: This is the API for the ESports Management platform.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: ESports Management API
   version: "1.0"
 paths:
   /api/admin/matches:
     get:
       consumes:
       - application/json
-      description: Mendapatkan daftar semua pertandingan dengan filter tournament_id
-        opsional
+      description: Mendapatkan daftar semua pertandingan, bisa difilter berdasarkan
+        tournament_id
       parameters:
-      - description: Tournament ID filter
+      - description: Filter pertandingan berdasarkan ID turnamen
         in: query
         name: tournament_id
         type: string
@@ -562,13 +571,14 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Match'
+              $ref: '#/definitions/model.MatchWithDetails'
             type: array
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Get All Matches
       tags:
       - Matches
@@ -593,13 +603,13 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
         "409":
           description: Conflict
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Create New Match
       tags:
       - Matches
@@ -621,16 +631,12 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.MatchResponse'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Delete Match
       tags:
       - Matches
@@ -654,13 +660,13 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Get Match By ID
       tags:
       - Matches
@@ -690,13 +696,13 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Update Match
       tags:
       - Matches
@@ -719,6 +725,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Get All Players
       tags:
       - Players
@@ -743,18 +751,13 @@ paths:
         "400":
           description: Request data tidak valid
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
         "409":
           description: Player sudah ada
           schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Create New Player
       tags:
       - Players
@@ -793,6 +796,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Delete Player
       tags:
       - Players
@@ -829,6 +834,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Get Player By ID
       tags:
       - Players
@@ -859,18 +866,13 @@ paths:
         "400":
           description: Request data tidak valid
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
         "404":
           description: Player tidak ditemukan
           schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Update Player
       tags:
       - Players
@@ -893,6 +895,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Get All Teams
       tags:
       - Teams
@@ -917,13 +921,13 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
         "409":
           description: Conflict
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Create New Team
       tags:
       - Teams
@@ -955,6 +959,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Delete Team
       tags:
       - Teams
@@ -985,6 +991,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Get Team By ID
       tags:
       - Teams
@@ -1014,177 +1022,16 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Update Team
       tags:
       - Teams
-  /api/admin/tickets:
-    get:
-      consumes:
-      - application/json
-      description: Mendapatkan daftar semua jenis tiket dengan opsi filter dan populate
-        tournament details
-      parameters:
-      - description: Filter berdasarkan Tournament ID
-        in: query
-        name: tournament_id
-        type: string
-      - default: false
-        description: Include tournament details (true/false)
-        in: query
-        name: populate
-        type: boolean
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List semua ticket types dengan tournament details (dengan populate=true)
-          schema:
-            items:
-              $ref: '#/definitions/model.TicketWithTournament'
-            type: array
-        "400":
-          description: Tournament ID format tidak valid
-          schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: Gagal mengambil data dari database
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Get All Ticket Types
-      tags:
-      - Tickets
-  /api/admin/tickets/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Menghapus jenis tiket dari database secara permanen. Operasi ini
-        tidak dapat dibatalkan.
-      parameters:
-      - description: Ticket ID (ObjectID format)
-        example: '"64f123abc456def789012345"'
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Ticket berhasil dihapus
-          schema:
-            $ref: '#/definitions/model.TicketResponse'
-        "400":
-          description: Ticket ID format tidak valid
-          schema:
-            additionalProperties: true
-            type: object
-        "404":
-          description: Ticket type tidak ditemukan
-          schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Delete Ticket Type
-      tags:
-      - Tickets
-    get:
-      consumes:
-      - application/json
-      description: Mendapatkan detail jenis tiket berdasarkan ID dengan opsi populate
-        tournament details
-      parameters:
-      - description: Ticket ID (ObjectID format)
-        example: '"64f123abc456def789012345"'
-        in: path
-        name: id
-        required: true
-        type: string
-      - default: false
-        description: Include tournament details (true/false)
-        in: query
-        name: populate
-        type: boolean
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Detail ticket type dengan tournament details (dengan populate=true)
-          schema:
-            $ref: '#/definitions/model.TicketWithTournament'
-        "400":
-          description: Ticket ID format tidak valid
-          schema:
-            additionalProperties: true
-            type: object
-        "404":
-          description: Ticket type tidak ditemukan
-          schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Get Ticket Type By ID
-      tags:
-      - Tickets
-    put:
-      consumes:
-      - application/json
-      description: Memperbarui detail jenis tiket. Field yang tidak diisi akan tetap
-        menggunakan nilai lama.
-      parameters:
-      - description: Ticket ID (ObjectID format)
-        example: '"64f123abc456def789012345"'
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Data tiket yang akan diupdate (partial update supported)
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/model.TicketRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Ticket berhasil diupdate
-          schema:
-            $ref: '#/definitions/model.TicketResponse'
-        "400":
-          description: Request data atau ID format tidak valid
-          schema:
-            additionalProperties: true
-            type: object
-        "404":
-          description: Ticket type tidak ditemukan
-          schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Update Ticket Type
-      tags:
-      - Tickets
   /api/admin/tournaments:
     get:
       description: Get all tournaments with admin details
@@ -1195,7 +1042,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Tournament'
+              $ref: '#/definitions/model.TournamentWithDetails'
             type: array
         "500":
           description: Internal Server Error
@@ -1334,6 +1181,68 @@ paths:
       summary: Update tournament
       tags:
       - Tournament Management (Admin)
+  /api/admin/upload/player-avatar:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload player avatar image (PNG, JPG, JPEG)
+      parameters:
+      - description: Player avatar image file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UploadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Upload player avatar
+      tags:
+      - Upload
+  /api/admin/upload/team-logo:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload team logo image (PNG, JPG, JPEG)
+      parameters:
+      - description: Team logo image file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UploadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Upload team logo
+      tags:
+      - Upload
   /api/admin/users:
     get:
       consumes:
@@ -1564,13 +1473,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Mendapatkan profil user untuk testing - tidak memerlukan authentication
-        (demo mode)
-      parameters:
-      - description: User ID untuk mendapatkan profil (opsional)
-        in: query
-        name: user_id
-        type: string
+      description: Mendapatkan profil user yang sedang login
       produces:
       - application/json
       responses:
@@ -1578,6 +1481,11 @@ paths:
           description: Profil user
           schema:
             $ref: '#/definitions/model.UserProfile'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
         "404":
           description: User tidak ditemukan
           schema:
@@ -1588,7 +1496,9 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: Get User Profile (Demo Mode)
+      security:
+      - BearerAuth: []
+      summary: Get User Profile
       tags:
       - Authentication
   /api/auth/register:
@@ -1628,75 +1538,77 @@ paths:
       summary: Register New User
       tags:
       - Authentication
-  /api/tickets:
-    post:
-      consumes:
-      - application/json
-      description: Membuat jenis tiket baru untuk turnamen. Setiap tournament bisa
-        memiliki berbagai jenis tiket dengan harga dan kapasitas yang berbeda.
-      parameters:
-      - description: Data tiket yang akan dibuat
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/model.TicketRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Ticket berhasil dibuat
-          schema:
-            $ref: '#/definitions/model.TicketResponse'
-        "400":
-          description: Request data tidak valid
-          schema:
-            additionalProperties: true
-            type: object
-        "409":
-          description: Tournament tidak ditemukan
-          schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Create New Ticket Type
-      tags:
-      - Tickets
-  /api/tickets/user/{userId}:
+  /api/me/tickets:
     get:
       consumes:
       - application/json
-      description: Mendapatkan semua tiket yang dimiliki oleh user tertentu
-      parameters:
-      - description: User ID
-        in: path
-        name: userId
-        required: true
-        type: string
+      description: Retrieves all tickets purchased by the currently authenticated
+        user.
       produces:
       - application/json
       responses:
         "200":
-          description: List tiket user
+          description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Ticket'
+              $ref: '#/definitions/model.UserTicketResponse'
             type: array
-        "400":
-          description: ID user tidak valid
+        "401":
+          description: Unauthorized
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            additionalProperties: true
-            type: object
-      summary: Get Tickets by User ID
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get My Tickets
+      tags:
+      - Tickets
+  /api/tickets/purchase:
+    post:
+      consumes:
+      - application/json
+      description: Allows an authenticated user to purchase a ticket for a specific
+        match.
+      parameters:
+      - description: Purchase Ticket Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserTicketRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.UserTicket'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Match not found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "409":
+          description: Ticket already purchased
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Purchase a ticket
       tags:
       - Tickets
   /api/tournaments:
@@ -1745,102 +1657,9 @@ paths:
       summary: Get tournament details (public)
       tags:
       - Tournament Data (Public)
-  /api/tournaments/{id}/tickets:
-    get:
-      consumes:
-      - application/json
-      description: Mendapatkan semua jenis tiket yang tersedia untuk tournament tertentu
-      parameters:
-      - description: Tournament ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List tiket untuk tournament
-          schema:
-            items:
-              $ref: '#/definitions/model.Ticket'
-            type: array
-        "400":
-          description: ID tournament tidak valid
-          schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Get Tickets by Tournament ID
-      tags:
-      - Tickets
-  /api/upload/player-avatar:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Upload player avatar image (PNG, JPG, JPEG)
-      parameters:
-      - description: Player avatar image file
-        in: formData
-        name: file
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.UploadResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Upload player avatar
-      tags:
-      - Upload
-  /api/upload/team-logo:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Upload team logo image (PNG, JPG, JPEG)
-      parameters:
-      - description: Team logo image file
-        in: formData
-        name: file
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.UploadResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: Upload team logo
-      tags:
-      - Upload
-schemes:
-- http
-- https
 securityDefinitions:
   BearerAuth:
+    description: Type "Bearer" followed by a space and a PASETO token.
     in: header
     name: Authorization
     type: apiKey

@@ -10,6 +10,20 @@ import (
 )
 
 // HandlePurchaseTicket handles the logic for a user purchasing a ticket for a match.
+// @Summary Purchase a ticket
+// @Description Allows an authenticated user to purchase a ticket for a specific match.
+// @Tags Tickets
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body model.UserTicketRequest true "Purchase Ticket Request"
+// @Success 201 {object} model.UserTicket
+// @Failure 400 {object} model.ErrorResponse "Invalid request"
+// @Failure 401 {object} model.ErrorResponse "Unauthorized"
+// @Failure 404 {object} model.ErrorResponse "Match not found"
+// @Failure 409 {object} model.ErrorResponse "Ticket already purchased"
+// @Failure 500 {object} model.ErrorResponse "Internal server error"
+// @Router /api/tickets/purchase [post]
 func HandlePurchaseTicket(c *fiber.Ctx) error {
 	var req model.UserTicketRequest
 	if err := c.BodyParser(&req); err != nil {
@@ -54,6 +68,16 @@ func HandlePurchaseTicket(c *fiber.Ctx) error {
 }
 
 // HandleGetUserTickets retrieves all tickets for the currently authenticated user.
+// @Summary Get My Tickets
+// @Description Retrieves all tickets purchased by the currently authenticated user.
+// @Tags Tickets
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {array} model.UserTicketResponse
+// @Failure 401 {object} model.ErrorResponse "Unauthorized"
+// @Failure 500 {object} model.ErrorResponse "Internal server error"
+// @Router /api/me/tickets [get]
 func HandleGetUserTickets(c *fiber.Ctx) error {
 	claims, ok := c.Locals("claims").(*model.TokenClaims)
 	if !ok || claims == nil {

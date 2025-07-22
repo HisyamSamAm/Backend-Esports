@@ -20,11 +20,12 @@ import (
 // @Tags Upload
 // @Accept multipart/form-data
 // @Produce json
+// @Security BearerAuth
 // @Param file formData file true "Team logo image file"
 // @Success 200 {object} model.UploadResponse
 // @Failure 400 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
-// @Router /api/upload/team-logo [post]
+// @Router /api/admin/upload/team-logo [post]
 func UploadTeamLogo(c *fiber.Ctx) error {
 	// Parse multipart form
 	file, err := c.FormFile("file")
@@ -98,11 +99,12 @@ func UploadTeamLogo(c *fiber.Ctx) error {
 // @Tags Upload
 // @Accept multipart/form-data
 // @Produce json
+// @Security BearerAuth
 // @Param file formData file true "Player avatar image file"
 // @Success 200 {object} model.UploadResponse
 // @Failure 400 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
-// @Router /api/upload/player-avatar [post]
+// @Router /api/admin/upload/player-avatar [post]
 func UploadPlayerAvatar(c *fiber.Ctx) error {
 	// Parse multipart form
 	file, err := c.FormFile("file")

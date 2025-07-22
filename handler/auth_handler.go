@@ -6,7 +6,6 @@ import (
 	"embeck/repository"
 	"regexp"
 	"strings"
-	"time"
 
 	"embeck/pkg/auth"
 
@@ -148,33 +147,24 @@ func Login(c *fiber.Ctx) error {
 }
 
 // GetProfile godoc
-// @Summary Get User Profile (Demo Mode)
-// @Description Mendapatkan profil user untuk testing - tidak memerlukan authentication (demo mode)
+// @Summary Get User Profile
+// @Description Mendapatkan profil user yang sedang login
 // @Tags Authentication
 // @Accept json
 // @Produce json
-// @Param user_id query string false "User ID untuk mendapatkan profil (opsional)"
+// @Security BearerAuth
 // @Success 200 {object} model.UserProfile "Profil user"
+// @Failure 401 {object} map[string]interface{} "Unauthorized"
 // @Failure 404 {object} map[string]interface{} "User tidak ditemukan"
 // @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /api/auth/profile [get]
 func GetProfile(c *fiber.Ctx) error {
-	// Get user ID from query parameter (since no auth required)
-	userID := c.Query("user_id")
-
-	// If no user_id provided, return default admin user info
-	if userID == "" {
-		// Return default admin profile for demo
-		demoObjectID, _ := primitive.ObjectIDFromHex("507f1f77bcf86cd799439011") // Demo ObjectID
-		profile := model.UserProfile{
-			ID:        demoObjectID,
-			Username:  "demo-admin",
-			Email:     "admin@embeck.com",
-			Role:      "admin",
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		}
-		return c.Status(fiber.StatusOK).JSON(profile)
+	// Get user ID from claims stored in middleware
+	userID, ok := c.Locals("user_id").(string)
+	if !ok || userID == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "User ID not found in token claims",
+		})
 	}
 
 	// Get user from database if ID provided

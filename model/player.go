@@ -20,11 +20,11 @@ type Player struct {
 
 // PlayerRequest represents request body for creating/updating player
 type PlayerRequest struct {
-	Name       string `json:"name" bson:"name"`
-	MLNickname string `json:"ml_nickname" bson:"ml_nickname"`
-	MLID       string `json:"ml_id" bson:"ml_id"`
-	Status     string `json:"status" bson:"status"`
-	AvatarURL  string `json:"avatar_url,omitempty" bson:"avatar_url,omitempty"`
+	Name       string `json:"name" bson:"name" example:"John Doe"`
+	MLNickname string `json:"ml_nickname" bson:"ml_nickname" example:"johndoe123"`
+	MLID       string `json:"ml_id" bson:"ml_id" example:"123456789"`
+	Status     string `json:"status" bson:"status" example:"active"`
+	AvatarURL  string `json:"avatar_url,omitempty" bson:"avatar_url,omitempty" example:"https://example.com/avatar.png"`
 }
 
 // PlayerResponse represents response for player operations
