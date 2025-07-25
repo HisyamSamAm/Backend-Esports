@@ -2529,9 +2529,9 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:1010",
+	Host:             "backend-esports.up.railway.app",
 	BasePath:         "/",
-	Schemes:          []string{},
+	Schemes:          []string{"https", "http"},
 	Title:            "ESports Management API",
 	Description:      "This is the API for the ESports Management platform.",
 	InfoInstanceName: "swagger",

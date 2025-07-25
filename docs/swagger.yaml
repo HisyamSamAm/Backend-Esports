@@ -541,7 +541,7 @@ definitions:
         example: 5
         type: integer
     type: object
-host: localhost:1010
+host: backend-esports.up.railway.app
 info:
   contact:
     email: support@embeck.com
@@ -1657,6 +1657,9 @@ paths:
       summary: Get tournament details (public)
       tags:
       - Tournament Data (Public)
+schemes:
+- https
+- http
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and a PASETO token.

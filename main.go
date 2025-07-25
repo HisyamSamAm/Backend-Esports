@@ -32,7 +32,8 @@ func init() {
 // @contact.email support@embeck.com
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @host localhost:1010
+// @host backend-esports.up.railway.app
+// @schemes https http
 // @BasePath /
 // @securityDefinitions.apikey BearerAuth
 // @in header
